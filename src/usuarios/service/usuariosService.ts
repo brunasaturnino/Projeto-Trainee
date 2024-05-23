@@ -7,13 +7,8 @@ class usuariosService {
     async createUsuario(usuario : Usuario)
     {
         await prisma.usuarios.create({
-            data: {
-                nome: usuario.nome,
-                email: usuario.email,
-                senha: usuario.senha,
-                foto: usuario.foto,
-                privilegio : usuario.privilegio
-            }
+            data: usuario
         });
     }
+
 }
