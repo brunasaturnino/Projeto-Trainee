@@ -18,6 +18,8 @@ class usuariosService {
                 id: id
             }
         });
+
+        return user;
     }
 
     async getUserByEmail(email : string)
@@ -27,6 +29,8 @@ class usuariosService {
                 email: email
             }
         });
+
+        return user;
     }
 
     async filterByPrivilegios(privilegio : boolean)
@@ -36,5 +40,7 @@ class usuariosService {
                 privilegio: privilegio
             }
         });
+
+        return users;
     }
 }
