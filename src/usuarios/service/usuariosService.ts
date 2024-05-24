@@ -28,4 +28,13 @@ class usuariosService {
             }
         });
     }
+
+    async filterByPrivilegios(privilegio : boolean)
+    {
+        const users = await prisma.usuarios.findMany({
+            where: {
+                privilegio: privilegio
+            }
+        });
+    }
 }
