@@ -11,4 +11,21 @@ class usuariosService {
         });
     }
 
+    async getUserById(id : number)
+    {
+        const user : Usuario = await prisma.usuarios.findFirst({
+            where : {
+                id: id
+            }
+        });
+    }
+
+    async getUserByEmail(email : string)
+    {
+        const user : Usuario = await prisma.usuarios.findFirst({
+            where : {
+                email: email
+            }
+        });
+    }
 }
