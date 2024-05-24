@@ -6,79 +6,124 @@ class usuariosService {
 
     async createUsuario(usuario : Usuario)
     {
-        await prisma.usuarios.create({
-            data: usuario
-        });
+        try {
+            await prisma.usuarios.create({
+                data: usuario
+            });    
+
+        } catch (error) {
+            throw error;
+        }
+        
     }
 
     async getUserById(id : number)
     {
-        const user : Usuario = await prisma.usuarios.findFirst({
-            where : {
-                id: id
-            }
-        });
+        try {
+            const user : Usuario = await prisma.usuarios.findFirst({
+                where : {
+                    id: id
+                }
+            });    
 
-        return user;
+            return user;
+
+        } catch (error) {
+            throw error;
+        }
+        
     }
 
     async getUserByEmail(email : string)
     {
-        const user : Usuario = await prisma.usuarios.findFirst({
-            where : {
-                email: email
-            }
-        });
+        try {
+            const user : Usuario = await prisma.usuarios.findFirst({
+                where : {
+                    email: email
+                }
+            });
+    
+            return user;
 
-        return user;
+        } catch (error) {
+            throw error;
+        }
+        
     }
 
     async filterByPrivilegios(privilegio : boolean)
     {
-        const users = await prisma.usuarios.findMany({
-            where: {
-                privilegio: privilegio
-            }
-        });
 
-        return users;
+        try {
+            const users = await prisma.usuarios.findMany({
+                where: {
+                    privilegio: privilegio
+                }
+            });
+    
+            return users;
+
+        } catch (error) {
+            throw error;
+        }
+        
     }
 
     async updateUserById(id : number, usuario : Usuario)
     {
-        await prisma.usuarios.update({
-            data: usuario,
-            where: {
-                id: id
-            }           
-        })
+        try {
+            await prisma.usuarios.update({
+                data: usuario,
+                where: {
+                    id: id
+                }           
+            })
+        } catch (error) {
+            throw error;
+        }
+        
     }
 
     async updateUserByEmail(email : string, usuario : Usuario)
     {
-        await prisma.usuarios.update({
-            data: usuario,
-            where: {
-                email: email
-            }           
-        })
+        try {
+            await prisma.usuarios.update({
+                data: usuario,
+                where: {
+                    email: email
+                }           
+            })
+        } catch (error) {
+            throw error;
+        }
+        
     }
 
     async removeUserById(id : number)
     {
-        await prisma.usuarios.delete({
-            where: {
-                id: id
-            }           
-        })
+        try {
+            await prisma.usuarios.delete({
+                where: {
+                    id: id
+                }           
+            })
+        } catch (error) {
+            throw error;
+        }
+        
     }
 
     async removeUserByEmail(email : string)
     {
-        await prisma.usuarios.delete({
-            where: {
-                email: email
-            }           
-        })
+        try {
+            await prisma.usuarios.delete({
+                where: {
+                    email: email
+                }           
+            })
+        } catch (error) {
+            throw error;
+        }
+
     }
 }
