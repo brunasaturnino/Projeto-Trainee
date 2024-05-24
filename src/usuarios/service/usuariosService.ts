@@ -63,4 +63,22 @@ class usuariosService {
             }           
         })
     }
+
+    async removeUserById(id : number)
+    {
+        await prisma.usuarios.delete({
+            where: {
+                id: id
+            }           
+        })
+    }
+
+    async removeUserByEmail(email : string)
+    {
+        await prisma.usuarios.delete({
+            where: {
+                email: email
+            }           
+        })
+    }
 }
