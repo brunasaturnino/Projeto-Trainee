@@ -43,4 +43,24 @@ class usuariosService {
 
         return users;
     }
+
+    async updateUserById(id : number, usuario : Usuario)
+    {
+        await prisma.usuarios.update({
+            data: usuario,
+            where: {
+                id: id
+            }           
+        })
+    }
+
+    async updateUserByEmail(email : string, usuario : Usuario)
+    {
+        await prisma.usuarios.update({
+            data: usuario,
+            where: {
+                email: email
+            }           
+        })
+    }
 }
