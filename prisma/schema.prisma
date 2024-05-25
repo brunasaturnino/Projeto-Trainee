@@ -14,6 +14,7 @@ model Usuarios {
   senha      String
   foto       String? // ? represnta opcional
   privilegio Boolean
+  musicas Musicas[]
 }
 
 model Artistas {
@@ -32,4 +33,5 @@ model Musicas {
   album        String
   artistas     Artistas @relation(fields: [artistasId], references: [id])
   artistasId    Int
+  usuarios Usuarios[]
 }
