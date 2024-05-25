@@ -12,26 +12,28 @@ model Usuarios {
   email      String @unique
   nome       String 
   senha      String
-  foto       String? // ? represnta opcional
+  foto       String? // ? representa opcional
   privilegio Boolean
-  musicas Musicas[]
+  musicas    Musicas[]
 }
 
 model Artistas {
-  id         Int @id @default(autoincrement())
-  nome       String 
-  foto       String
-  streams    Int
-  musicas Musicas[]
+  id               Int      @id @default(autoincrement())
+  nome             String
+  foto             String?
+  numeroDeStreams  Int      @default(0)
+  musicas    Musicas[]
 }
 
 
+
 model Musicas {
-  id           Int @id @default(autoincrement())
-  nome         String 
-  genero       String
-  album        String
-  artistas     Artistas @relation(fields: [artistasId], references: [id])
-  artistasId    Int
-  usuarios Usuarios[]
+  id        Int      @id @default(autoincrement())
+  nome      String
+  genero    String
+  album     String
+  artistaId Int
+  usuarioId Int
+  artista   Artistas  @relation(fields: [artistaId], references: [id])
+  usuario   Usuarios  @relation(fields: [usuarioId], references: [id])
 }
