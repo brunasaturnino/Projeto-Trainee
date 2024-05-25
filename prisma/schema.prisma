@@ -21,4 +21,15 @@ model Artistas {
   nome       String 
   foto       String
   streams    Int
+  musicas Musicas[]
+}
+
+
+model Musicas {
+  id           Int @id @default(autoincrement())
+  nome         String 
+  genero       String
+  album        String
+  artistas     Artistas @relation(fields: [artistasId], references: [id])
+  artistasId    Int
 }
