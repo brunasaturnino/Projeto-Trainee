@@ -20,7 +20,7 @@ class usuariosService {
     async getUserById(id : number)
     {
         try {
-            const user : Usuario = await prisma.usuarios.findFirst({
+            const user : Usuario | null = await prisma.usuarios.findFirst({
                 where : {
                     id: id
                 }
@@ -37,7 +37,7 @@ class usuariosService {
     async getUserByEmail(email : string)
     {
         try {
-            const user : Usuario = await prisma.usuarios.findFirst({
+            const user : Usuario | null = await prisma.usuarios.findFirst({
                 where : {
                     email: email
                 }
@@ -55,7 +55,7 @@ class usuariosService {
     {
 
         try {
-            const users = await prisma.usuarios.findMany({
+            const users : Usuario[] | null = await prisma.usuarios.findMany({
                 where: {
                     privilegio: privilegio
                 }
