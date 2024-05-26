@@ -126,3 +126,5 @@ class usuariosService {
 
     }
 }
+
+export default usuariosService;
