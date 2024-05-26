@@ -21,7 +21,7 @@ model Artistas {
   id               Int      @id @default(autoincrement())
   nome             String
   foto             String?
-  numeroDeStreams  Int      @default(0)
+  streams  Int      @default(0)
   musicas          Musicas[]
 }
 

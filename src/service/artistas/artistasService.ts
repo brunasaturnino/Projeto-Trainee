@@ -2,7 +2,7 @@ import { Artistas } from "@prisma/client";
 import prisma from "../../config/prismaClient";
 
 class artistasService {
-    async createArtista(artistas: Artistas) {
+    async createArtista(artistas:Omit<Artistas, 'id'>) {
         try {
             await prisma.artistas.create({
                 data: artistas
