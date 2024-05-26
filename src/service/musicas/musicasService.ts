@@ -3,13 +3,13 @@ import prisma from "../../config/prismaClient";
 
 class musicasService {
 
-    async createMusica(musica : Musicas)
+    async createMusica(musica :Omit<Musicas, 'id'>)
     {
         try {
-            await prisma.musicas.create({
+            const musicas: Musicas | null =await prisma.musicas.create({
                 data: musica
             });    
-
+            return musicas;
         } catch (error) {
             throw error;
         }
@@ -42,7 +42,7 @@ class musicasService {
         }
     }
 
-    async removeUserById(id : number)
+    async removeMusicById(id : number)
     {
         try {
             await prisma.musicas.delete({

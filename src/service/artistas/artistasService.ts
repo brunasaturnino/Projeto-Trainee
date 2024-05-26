@@ -4,9 +4,10 @@ import prisma from "../../config/prismaClient";
 class artistasService {
     async createArtista(artistas:Omit<Artistas, 'id'>) {
         try {
-            await prisma.artistas.create({
+            const artist: Artistas | null =await prisma.artistas.create({
                 data: artistas
             });
+            return artist;
         } catch (error) {
             throw error;
         }
