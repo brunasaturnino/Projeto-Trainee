@@ -125,6 +125,31 @@ class usuariosService {
         }
 
     }
+
+    async haveUserListenedMusica(idUsuario : number, idMusica : number)
+    {
+        try {
+            const usuario : Usuarios | null = await prisma.usuarios.findFirst({
+                where: {
+                    id: idUsuario
+                },
+    
+                include: {
+                    musicas: {
+                        where: {
+                            id: idMusica
+                        }
+    
+                    }
+                }
+            })
+            
+            return (usuario != null);
+        } catch (error) {
+            throw error;
+        }
+        
+    }
 }
 
 export default usuariosService;
