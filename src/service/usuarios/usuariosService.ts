@@ -1,10 +1,9 @@
 import { Usuarios } from "@prisma/client";
 import prisma from "../../config/prismaClient";
-import { Usuario } from "../classes/usuario";
 
 class usuariosService {
 
-    async createUsuario(usuario : Usuario)
+    async createUsuario(usuario : Usuarios)
     {
         try {
             await prisma.usuarios.create({
@@ -20,7 +19,7 @@ class usuariosService {
     async getUserById(id : number)
     {
         try {
-            const user : Usuario | null = await prisma.usuarios.findFirst({
+            const user : Usuarios | null = await prisma.usuarios.findFirst({
                 where : {
                     id: id
                 }
@@ -37,7 +36,7 @@ class usuariosService {
     async getUserByEmail(email : string)
     {
         try {
-            const user : Usuario | null = await prisma.usuarios.findFirst({
+            const user : Usuarios | null = await prisma.usuarios.findFirst({
                 where : {
                     email: email
                 }
@@ -55,7 +54,7 @@ class usuariosService {
     {
 
         try {
-            const users : Usuario[] | null = await prisma.usuarios.findMany({
+            const users : Usuarios[] | null = await prisma.usuarios.findMany({
                 where: {
                     privilegio: privilegio
                 }
@@ -69,7 +68,7 @@ class usuariosService {
         
     }
 
-    async updateUserById(id : number, usuario : Usuario)
+    async updateUserById(id : number, usuario : Usuarios)
     {
         try {
             await prisma.usuarios.update({
@@ -84,7 +83,7 @@ class usuariosService {
         
     }
 
-    async updateUserByEmail(email : string, usuario : Usuario)
+    async updateUserByEmail(email : string, usuario : Usuarios)
     {
         try {
             await prisma.usuarios.update({
