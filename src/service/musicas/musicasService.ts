@@ -29,19 +29,14 @@ class musicasService {
         }
     }
 
-    async updateArtistById(id: number, artista: Artistas) {
+    async updateMusicaById(id: number, musica : Musicas) {
         try {
-            const artist: Artistas | null = await prisma.artistas.update({
-                data: {
-                    nome: artista.nome,
-                    foto: artista.foto,
-                    streams: artista.streams 
-                },
+            await prisma.musicas.update({
+                data: musica,
                 where: {
                     id: id
                 }
             });
-            return artist;
         } catch (error) {
             throw error;
         }
