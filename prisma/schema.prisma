@@ -36,4 +36,7 @@ model Musicas {
   usuarioId Int
   artista   Artistas  @relation(fields: [artistaId], references: [id])
   usuario   Usuarios  @relation(fields: [usuarioId], references: [id])
+
+  @@index([artistaId])
+  @@index([usuarioId])
 }
