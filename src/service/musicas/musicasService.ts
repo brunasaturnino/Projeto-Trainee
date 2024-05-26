@@ -56,3 +56,6 @@ class musicasService {
     }
 
 }
+
+
+export default musicasService;
