@@ -42,4 +42,17 @@ class musicasService {
         }
     }
 
+    async removeUserById(id : number)
+    {
+        try {
+            await prisma.musicas.delete({
+                where: {
+                    id: id
+                }           
+            })
+        } catch (error) {
+            throw error;
+        }       
+    }
+
 }
