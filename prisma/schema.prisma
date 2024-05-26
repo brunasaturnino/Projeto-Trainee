@@ -22,7 +22,7 @@ model Artistas {
   nome             String
   foto             String?
   numeroDeStreams  Int      @default(0)
-  musicas    Musicas[]
+  musicas          Musicas[]
 }
 
 
