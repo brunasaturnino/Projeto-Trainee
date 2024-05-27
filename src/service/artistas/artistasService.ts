@@ -2,11 +2,12 @@ import { Artistas } from "@prisma/client";
 import prisma from "../../config/prismaClient";
 
 class artistasService {
-    async createArtista(artistas: Artistas) {
+    async createArtista(artistas:Omit<Artistas, 'id'>) {
         try {
-            await prisma.artistas.create({
+            const artist: Artistas | null =await prisma.artistas.create({
                 data: artistas
             });
+            return artist;
         } catch (error) {
             throw error;
         }
@@ -25,19 +26,13 @@ class artistasService {
         }
     }
 
-    async updateArtistById(id: number, artista: Artistas) {
+    async updateArtistById(id: number, artista: Partial<Artistas>) {
         try {
-            const artist: Artistas | null = await prisma.artistas.update({
-                data: {
-                    nome: artista.nome,
-                    foto: artista.foto,
-                    streams: artista.streams 
-                },
-                where: {
-                    id: id
-                }
+            const updatedArtist = await prisma.artistas.update({
+                data: artista,
+                where: { id: id }
             });
-            return artist;
+            return updatedArtist;
         } catch (error) {
             throw error;
         }

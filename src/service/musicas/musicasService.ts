@@ -1,61 +1,56 @@
-import { Artistas, Musicas } from "@prisma/client";
+import { Musicas } from "@prisma/client";
 import prisma from "../../config/prismaClient";
 
-class musicasService {
 
-    async createMusica(musica : Musicas)
-    {
+class musicasService {
+    async createMusica(musicas: Musicas) {
         try {
             await prisma.musicas.create({
-                data: musica
-            });    
-
+                data: musicas
+            });
         } catch (error) {
             throw error;
         }
-        
     }
 
-    async getMusicaById(id: number) {
+    async getMusicById(id: number) {
         try {
-            const musica: Musicas | null = await prisma.musicas.findUnique({
+            const music: Musicas | null = await prisma.musicas.findUnique({
                 where: {
                     id: id,
                 },
             });
-            return musica;
+            return music;
         } catch (error) {
             throw error;
         }
     }
 
-    async updateMusicaById(id: number, musica : Musicas) {
+    async updateMusicById(id: number, musica: Partial<Musicas>) {
         try {
-            await prisma.musicas.update({
+            const updatedMusic = await prisma.musicas.update({
                 data: musica,
-                where: {
-                    id: id
-                }
+                where: { id: id }
             });
+            return updatedMusic;
         } catch (error) {
             throw error;
         }
     }
 
-    async removeUserById(id : number)
-    {
+    async removeMusicById(id : number) {
         try {
-            await prisma.musicas.delete({
+            const music: Musicas | null = await prisma.musicas.delete({
                 where: {
                     id: id
                 }           
-            })
+            });
+            return music;
         } catch (error) {
             throw error;
-        }       
+        }
     }
-
 }
 
-
 export default musicasService;
+

@@ -150,6 +150,29 @@ class usuariosService {
         }
         
     }
+
+    async userListenedMusica(idUsuario : number, idMusica : number)
+    {
+        try {
+            await prisma.usuarios.update({
+                where: {
+                    id: idUsuario
+                },
+    
+                data: {
+                    musicas: {
+                        connect: {
+                            id: idMusica,
+                        },
+                    },
+                }
+            })
+            
+        } catch (error) {
+            throw error;
+        }
+        
+    }
 }
 
 export default usuariosService;
