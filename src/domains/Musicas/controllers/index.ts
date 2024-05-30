@@ -44,6 +44,16 @@ router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
     }
 });
 
+router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        await musicService.removeMusicById(Number(id));
+        res.status(204).send();
+    } catch (error) {
+        next(error);
+    }
+});
+
 
 
 export default router; 
