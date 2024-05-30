@@ -33,6 +33,17 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
     }
 });
 
+router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const music = req.body;
+        await musicService.updateMusicById(Number(id), music);
+        res.status(204).send();
+    } catch (error) {
+        next(error);
+    }
+});
+
 
 
 export default router; 
