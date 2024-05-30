@@ -1,5 +1,5 @@
 import { Artistas } from "@prisma/client";
-import prisma from "../../config/prismaClient";
+import prisma from "../../../config/prismaClient";
 
 class artistasService {
     async createArtista(artistas:Omit<Artistas, 'id'>) {
