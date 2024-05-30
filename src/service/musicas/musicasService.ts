@@ -1,5 +1,5 @@
 import { Musicas } from "@prisma/client";
-import prisma from "../../config/prismaClient";
+import prisma from "../../../config/prismaClient";
 
 
 class musicasService {
