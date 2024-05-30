@@ -23,4 +23,16 @@ router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
     }
 });
 
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const music = req.body;
+        await musicService.createMusica(music);
+        res.status(201).send();
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+
 export default router; 
