@@ -13,3 +13,14 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
     }
 });
 
+router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const music = await musicService.getMusicById(Number(id));
+        res.json(music);
+    } catch (error) {
+        next(error);
+    }
+});
+
+export default router; 
