@@ -3,6 +3,7 @@ import prisma from "./../../../../config/prismaClient";
 
 
 class musicasService {
+
     async createMusica(musicas: Musicas) {
         try {
             await prisma.musicas.create({
@@ -12,6 +13,13 @@ class musicasService {
             throw error;
         }
     }
+
+    async getMusics() {
+        return await prisma.musicas.findMany({
+          orderBy: { nome: "asc" },
+          include: { artista: true, usuario: true },
+        });
+      }
 
     async getMusicById(id: number) {
         try {
