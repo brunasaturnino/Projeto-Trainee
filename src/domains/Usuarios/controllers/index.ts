@@ -6,6 +6,18 @@ import { Users } from "@prisma/client";
 const router = Router();
 const Service = new usersService();
 
+router.get('/', async (req : Request, res : Response, next : NextFunction) => {
+    
+    try {
+        const users : Users[] = await Service.getUsers(); 
+        res.status(200).json(users);
+
+    } catch (error) {
+        next(error);
+    }
+    
+})
+
 router.get('/:id', async (req : Request, res : Response, next : NextFunction) => {
     
     try {
