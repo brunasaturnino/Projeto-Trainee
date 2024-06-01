@@ -11,6 +11,11 @@ const opstions: CorsOptions = {
     origin: process.env.APP_URL
 }
 
+const userRouter = require('../src/domains/Usuarios/controllers/index')
+
+
+app.use('/users', userRouter);  
+
 app.use(cors(opstions));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
