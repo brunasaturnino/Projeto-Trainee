@@ -18,6 +18,19 @@ router.get('/', async (req : Request, res : Response, next : NextFunction) => {
     
 })
 
+router.get('/:privilege', async (req : Request, res : Response, next : NextFunction) => {
+    
+    try {
+        const { privilege } = req.params;
+        const users : Users[] = await Service.filterByPrivileges(Boolean(privilege)); 
+        res.status(200).json(users);
+
+    } catch (error) {
+        next(error);
+    }
+    
+})
+
 router.get('/:id', async (req : Request, res : Response, next : NextFunction) => {
     
     try {
