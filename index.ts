@@ -8,7 +8,7 @@ const serviceMusica= new musicasService();
 const serviceUsuario = new usuariosService();
 
 async function testCreateArtista(artista : Partial<Artistas>) {
-    
+
     try {
         const artist = await service.createArtista(artista as Artistas);
         console.log("Artista criado:", artist);
@@ -45,7 +45,7 @@ async function testRemoveArtistById(id: number) {
 }
 
 async function testCreateUsuario(usuario : Partial<Usuarios>) {
-    
+
     try {
         const newUsuario = await serviceUsuario.createUsuario(usuario as Usuarios);
         console.log("usuario criado:", newUsuario);
@@ -138,7 +138,7 @@ async function testRemoveMusicById(id: number) {
 }
 
 async function runTests() {
-    
+
 
 
     const newArtist : Partial<Artistas> = { nome: "Jack new", streams: 200 };
@@ -150,26 +150,26 @@ async function runTests() {
     await testUpdateArtistById(2, updateArtist);
 
 
-    
+
     const newUser : Partial<Usuarios> = { nome: "Jack new", email:`oi$@gmail.com`, foto:null, privilegio:true, senha:"123" };
     await testCreateUsuario(newUser);    
 
     const upUser : Partial<Usuarios> = { nome: "João", email:"soares@gmail.com", foto:null, privilegio:true, senha:"123" };
     await testUpdateUsuarioById(1, upUser);
 
-    
+
     const newMusic : Partial<Musicas> = { nome: "meteoro da paixa", album: "oi", genero:'salve', artistaId: 1 };
     await testCreateMusica(newMusic);        
-    
+
 
     testUsuarioOuviu(1, 1);
 
     testUsuarioJaOuviu(1, 1);
 
     await testGetUsuarioById(1);
-    
+
     await testRemoveUsuarioById(1);
-    
+
     await testGetMusicById(1);
 
     const update: Partial<Musicas> = { nome: "Blue Updated", genero: "rock" };
