@@ -12,11 +12,26 @@ router.get('/:id', async (req : Request, res : Response, next : NextFunction) =>
         const { id } = req.params;
         const user : Users = await Service.getUserById(Number(id)); 
         res.status(200).json(user);
-        
+
     } catch (error) {
         next(error);
     }
     
-
 })
+
+
+
+router.get('/:email', async (req : Request, res : Response, next : NextFunction) => {
+    
+    try {
+        const { email } = req.params;
+        const user : Users = await Service.getUserByEmail(email); 
+        res.status(200).json(user);
+
+    } catch (error) {
+        next(error);
+    }
+    
+})
+
 
