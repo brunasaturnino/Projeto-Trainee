@@ -44,4 +44,13 @@ router.get('/:email', async (req : Request, res : Response, next : NextFunction)
     
 })
 
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.body;
+        await Service.createUser(user);
+        res.status(201).send();
+    } catch (error) {
+        next(error);
+    }
+});
 

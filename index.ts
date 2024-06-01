@@ -1,16 +1,16 @@
 import artistasService from "./src/domains/Artistas/services/artistasService";
 import musicasService from "./src/domains/Musicas/services/musicasService"
 import usersService from "./src/domains/Usuarios/services/usersService";
-import { Artistas, Musicas, Users } from "@prisma/client"; 
+import { Artists, Musicas, Users } from "@prisma/client"; 
 
 const service = new artistasService();
 const serviceMusica= new musicasService();
 const users_Service = new usersService();
 
-async function testCreateArtista(artista : Partial<Artistas>) {
+async function testCreateArtista(artista : Partial<Artists>) {
 
     try {
-        const artist = await service.createArtista(artista as Artistas);
+        const artist = await service.createArtista(artista as Artists);
         console.log("Artista criado:", artist);
     } catch (error) {
         console.error("Erro ao criar artista:", error);
@@ -26,9 +26,9 @@ async function testGetArtistById(id: number) {
     }
 }
 
-async function testUpdateArtistById(id: number, artista: Partial<Artistas>) {
+async function testUpdateArtistById(id: number, artista: Partial<Artists>) {
     try {
-        const updatedArtist = await service.updateArtistById(id, artista as Artistas);
+        const updatedArtist = await service.updateArtistById(id, artista as Artists);
         console.log(`Artista com ID ${id} atualizado:`, updatedArtist);
     } catch (error) {
         console.error(`Erro ao atualizar artista com ID ${id}:`, error);
@@ -47,7 +47,7 @@ async function testRemoveArtistById(id: number) {
 async function testCreateUsuario(usuario : Partial<Users>) {
 
     try {
-        const newUsuario = await users_Service.createUsuario(usuario as Users);
+        const newUsuario = await users_Service.createUser(usuario as Users);
         console.log("usuario criado:", newUsuario);
     } catch (error) {
         console.error("Erro ao criar usuario:", error);
@@ -83,7 +83,7 @@ async function testRemoveUsuarioById(id: number) {
 
 async function testUsuarioOuviu(idUser: number, idMusic : number) {
     try {
-        const upUser = await users_Service.userListenedMusica(idUser, idMusic);
+        const upUser = await users_Service.userListenedMusic(idUser, idMusic);
         console.log(`Usuario com ID ${idUser} atualizado:`, upUser);
     } catch (error) {
         console.error(`Erro ao remover usuario com ID ${idUser}:`, error);
@@ -92,7 +92,7 @@ async function testUsuarioOuviu(idUser: number, idMusic : number) {
 
 async function testUsuarioJaOuviu(idUser: number, idMusic : number) {
     try {
-        const ans = await users_Service.haveUserListenedMusica(idUser, idMusic);
+        const ans = await users_Service.haveUserListenedMusic(idUser, idMusic);
         console.log(`Usuario com ID ${idUser} ouviu a musica ${idMusic} ? `, ans);
     } catch (error) {
         console.error(`Erro ao atualizar usuario com ID ${idUser}:`, error);
@@ -141,24 +141,24 @@ async function runTests() {
 
 
 
-    const newArtist : Partial<Artistas> = { nome: "Jack new", streams: 200 };
+    const newArtist : Partial<Artists> = { name: "Jack new", streams: 200 };
     await testCreateArtista(newArtist);    
 
     await testGetArtistById(1);
 
-    const updateArtist: Partial<Artistas> = { nome: "Billie Updated", streams: 200 };
+    const updateArtist: Partial<Artists> = { name: "Billie Updated", streams: 200 };
     await testUpdateArtistById(2, updateArtist);
 
 
 
-    const newUser : Partial<Users> = { nome: "Jack new", email:`oi$@gmail.com`, foto:null, privilegio:true, senha:"123" };
+    const newUser : Partial<Users> = { name: "Jack new", email:`oi$@gmail.com`, photo:null, privileges:true, password:"123" };
     await testCreateUsuario(newUser);    
 
-    const upUser : Partial<Users> = { nome: "João", email:"soares@gmail.com", foto:null, privilegio:true, senha:"123" };
+    const upUser : Partial<Users> = { name: "João", email:"soares@gmail.com", photo:null, privileges:true, password:"123" };
     await testUpdateUsuarioById(1, upUser);
 
 
-    const newMusic : Partial<Musicas> = { nome: "meteoro da paixa", album: "oi", genero:'salve', artistaId: 1 };
+    const newMusic : Partial<Musicas> = { name: "meteoro da paixa", album: "oi", genre:'salve', artistId: 1 };
     await testCreateMusica(newMusic);        
 
 
@@ -172,7 +172,7 @@ async function runTests() {
 
     await testGetMusicById(1);
 
-    const update: Partial<Musicas> = { nome: "Blue Updated", genero: "rock" };
+    const update: Partial<Musicas> = { name: "Blue Updated", genre: "rock" };
     await testUpdateMusicById(1, update);
 
     await testRemoveArtistById(2);

@@ -3,11 +3,11 @@ import prisma from "../../../../config/prismaClient";
 
 class usersService {
 
-    async createUsuario(usuario : Users)
+    async createUser(user : Users)
     {
         try {
             await prisma.users.create({
-                data: usuario
+                data: user
             });    
 
         } catch (error) {
@@ -54,7 +54,7 @@ class usersService {
     {
         try {
             const users: Users[] | null = await prisma.users.findMany({
-                orderBy: { nome: "asc" },
+                orderBy: { name: "asc" },
             });
     
             return users;
@@ -65,13 +65,13 @@ class usersService {
         
     }
 
-    async filterByPrivilegios(privilegio : boolean)
+    async filterByPrivileges(privileges : boolean)
     {
 
         try {
             const users : Users[] | null = await prisma.users.findMany({
                 where: {
-                    privilegio: privilegio
+                    privileges: privileges
                 }
             });
     
@@ -83,11 +83,11 @@ class usersService {
         
     }
 
-    async updateUserById(id : number, usuario : Users)
+    async updateUserById(id : number, user : Users)
     {
         try {
             await prisma.users.update({
-                data: usuario,
+                data: user,
                 where: {
                     id: id
                 }           
@@ -98,11 +98,11 @@ class usersService {
         
     }
 
-    async updateUserByEmail(email : string, usuario : Users)
+    async updateUserByEmail(email : string, user : Users)
     {
         try {
             await prisma.users.update({
-                data: usuario,
+                data: user,
                 where: {
                     email: email
                 }           
@@ -141,43 +141,43 @@ class usersService {
 
     }
 
-    async haveUserListenedMusica(idUsuario : number, idMusica : number)
+    async haveUserListenedMusic(idUser : number, idMusic : number)
     {
         try {
-            const usuario : Users | null = await prisma.users.findFirst({
+            const user : Users | null = await prisma.users.findFirst({
                 where: {
-                    id: idUsuario
+                    id: idUser
                 },
     
                 include: {
-                    musicas: {
+                    musics: {
                         where: {
-                            id: idMusica
+                            id: idMusic
                         }
     
                     }
                 }
             })
             
-            return (usuario != null);
+            return (user != null);
         } catch (error) {
             throw error;
         }
         
     }
 
-    async userListenedMusica(idUsuario : number, idMusica : number)
+    async userListenedMusic(idUser : number, idMusic : number)
     {
         try {
             await prisma.users.update({
                 where: {
-                    id: idUsuario
+                    id: idUser
                 },
     
                 data: {
-                    musicas: {
+                    musics: {
                         connect: {
-                            id: idMusica,
+                            id: idMusic,
                         },
                     },
                 }
