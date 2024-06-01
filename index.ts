@@ -1,6 +1,6 @@
 import artistasService from "./src/domains/Artistas/services/artistasService";
 import musicasService from "./src/domains/Musicas/services/musicasService"
-import usuariosService from "./src/domains/Usuarios/services/usuariosService";
+import usuariosService from "./src/domains/Usuarios/services/usersService";
 import { Artistas, Musicas, Usuarios } from "@prisma/client"; 
 
 const service = new artistasService();

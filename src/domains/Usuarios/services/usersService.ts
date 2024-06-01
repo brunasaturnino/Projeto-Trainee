@@ -1,12 +1,12 @@
-import { Usuarios } from "@prisma/client";
-import prisma from "../../../config/prismaClient";
+import { Users } from "@prisma/client";
+import prisma from "../../../../config/prismaClient";
 
-class usuariosService {
+class usersService {
 
-    async createUsuario(usuario : Usuarios)
+    async createUsuario(usuario : Users)
     {
         try {
-            await prisma.usuarios.create({
+            await prisma.users.create({
                 data: usuario
             });    
 
@@ -19,7 +19,7 @@ class usuariosService {
     async getUserById(id : number)
     {
         try {
-            const user : Usuarios | null = await prisma.usuarios.findFirst({
+            const user : Users | null = await prisma.users.findFirst({
                 where : {
                     id: id
                 }
@@ -36,7 +36,7 @@ class usuariosService {
     async getUserByEmail(email : string)
     {
         try {
-            const user : Usuarios | null = await prisma.usuarios.findFirst({
+            const user : Users | null = await prisma.users.findFirst({
                 where : {
                     email: email
                 }
@@ -54,7 +54,7 @@ class usuariosService {
     {
 
         try {
-            const users : Usuarios[] | null = await prisma.usuarios.findMany({
+            const users : Users[] | null = await prisma.users.findMany({
                 where: {
                     privilegio: privilegio
                 }
@@ -68,10 +68,10 @@ class usuariosService {
         
     }
 
-    async updateUserById(id : number, usuario : Usuarios)
+    async updateUserById(id : number, usuario : Users)
     {
         try {
-            await prisma.usuarios.update({
+            await prisma.users.update({
                 data: usuario,
                 where: {
                     id: id
@@ -83,10 +83,10 @@ class usuariosService {
         
     }
 
-    async updateUserByEmail(email : string, usuario : Usuarios)
+    async updateUserByEmail(email : string, usuario : Users)
     {
         try {
-            await prisma.usuarios.update({
+            await prisma.users.update({
                 data: usuario,
                 where: {
                     email: email
@@ -101,7 +101,7 @@ class usuariosService {
     async removeUserById(id : number)
     {
         try {
-            await prisma.usuarios.delete({
+            await prisma.users.delete({
                 where: {
                     id: id
                 }           
@@ -115,7 +115,7 @@ class usuariosService {
     async removeUserByEmail(email : string)
     {
         try {
-            await prisma.usuarios.delete({
+            await prisma.users.delete({
                 where: {
                     email: email
                 }           
@@ -129,7 +129,7 @@ class usuariosService {
     async haveUserListenedMusica(idUsuario : number, idMusica : number)
     {
         try {
-            const usuario : Usuarios | null = await prisma.usuarios.findFirst({
+            const usuario : Users | null = await prisma.users.findFirst({
                 where: {
                     id: idUsuario
                 },
@@ -154,7 +154,7 @@ class usuariosService {
     async userListenedMusica(idUsuario : number, idMusica : number)
     {
         try {
-            await prisma.usuarios.update({
+            await prisma.users.update({
                 where: {
                     id: idUsuario
                 },
@@ -175,4 +175,4 @@ class usuariosService {
     }
 }
 
-export default usuariosService;
+export default usersService;

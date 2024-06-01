@@ -7,14 +7,14 @@ datasource db {
   url      = "file:./database.db"
 }
 
-model Usuarios {
+model Users {
   id         Int @id @default(autoincrement())
   email      String @unique
   nome       String 
   senha      String
   foto       String? // ? representa opcional
   privilegio Boolean
-  musicas    Musicas[]
+  musicas    Musicas[] 
 }
 
 model Artistas {
@@ -33,6 +33,6 @@ model Musicas {
   genero    String
   album     String
   artistaId Int
-  artista   Artistas  @relation(fields: [artistaId], references: [id])
-  usuario   Usuarios[]
+  artista   Artistas  @relation(fields: [artistaId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user   Users[]
 }
