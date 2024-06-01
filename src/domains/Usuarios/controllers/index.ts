@@ -99,3 +99,14 @@ router.delete("/:id", async (req: Request, res: Response, next: NextFunction) =>
         next(error);
     }
 });
+
+
+router.delete("/:email", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email } = req.params;
+        await Service.removeUserByEmail(email);
+        res.status(202).send();
+    } catch (error) {
+        next(error);
+    }
+});
