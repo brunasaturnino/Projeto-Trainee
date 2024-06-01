@@ -44,6 +44,19 @@ router.get('/:id', async (req : Request, res : Response, next : NextFunction) =>
     
 })
 
+router.get('/:idUser:idMusic', async (req : Request, res : Response, next : NextFunction) => {
+    
+    try {
+        const { idUser, idMusic } = req.params;
+        const answer : Boolean = await Service.haveUserListenedMusic(Number(idUser), Number(idUser)); 
+        res.status(200).json(answer);
+
+    } catch (error) {
+        next(error);
+    }
+    
+})
+
 router.get('/:email', async (req : Request, res : Response, next : NextFunction) => {
     
     try {
