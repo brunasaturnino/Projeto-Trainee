@@ -59,7 +59,7 @@ router.get('/:email', async (req : Request, res : Response, next : NextFunction)
 
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const user = req.body;
+        const user : Users = req.body;
         await Service.createUser(user);
         res.status(201).send();
     } catch (error) {
@@ -67,3 +67,14 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
     }
 });
 
+
+router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const user : Users = req.body;
+        await Service.updateUserById(Number(id), user);
+        res.status(202).send();
+    } catch (error) {
+        next(error);
+    }
+});
