@@ -103,6 +103,20 @@ router.put("/:email", async (req: Request, res: Response, next: NextFunction) =>
     }
 });
 
+
+router.get('/:idUser:idMusic', async (req : Request, res : Response, next : NextFunction) => {
+    
+    try {
+        const { idUser, idMusic } = req.params;
+        await Service.userListenedMusic(Number(idUser), Number(idUser)); 
+        res.status(202);
+
+    } catch (error) {
+        next(error);
+    }
+    
+})
+
 router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
