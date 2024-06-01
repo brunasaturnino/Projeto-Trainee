@@ -89,3 +89,13 @@ router.put("/:email", async (req: Request, res: Response, next: NextFunction) =>
         next(error);
     }
 });
+
+router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        await Service.removeUserById(Number(id));
+        res.status(202).send();
+    } catch (error) {
+        next(error);
+    }
+});
