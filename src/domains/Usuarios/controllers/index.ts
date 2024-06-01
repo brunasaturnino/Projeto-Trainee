@@ -78,3 +78,14 @@ router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
         next(error);
     }
 });
+
+router.put("/:email", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email } = req.params;
+        const user : Users = req.body;
+        await Service.updateUserByEmail(email, user);
+        res.status(202).send();
+    } catch (error) {
+        next(error);
+    }
+});
