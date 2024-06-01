@@ -1,11 +1,11 @@
 import artistasService from "./src/domains/Artistas/services/artistasService";
 import musicasService from "./src/domains/Musicas/services/musicasService"
-import usuariosService from "./src/domains/Usuarios/services/usersService";
-import { Artistas, Musicas, Usuarios } from "@prisma/client"; 
+import usersService from "./src/domains/Usuarios/services/usersService";
+import { Artistas, Musicas, Users } from "@prisma/client"; 
 
 const service = new artistasService();
 const serviceMusica= new musicasService();
-const serviceUsuario = new usuariosService();
+const users_Service = new usersService();
 
 async function testCreateArtista(artista : Partial<Artistas>) {
 
@@ -44,10 +44,10 @@ async function testRemoveArtistById(id: number) {
     }
 }
 
-async function testCreateUsuario(usuario : Partial<Usuarios>) {
+async function testCreateUsuario(usuario : Partial<Users>) {
 
     try {
-        const newUsuario = await serviceUsuario.createUsuario(usuario as Usuarios);
+        const newUsuario = await users_Service.createUsuario(usuario as Users);
         console.log("usuario criado:", newUsuario);
     } catch (error) {
         console.error("Erro ao criar usuario:", error);
@@ -56,16 +56,16 @@ async function testCreateUsuario(usuario : Partial<Usuarios>) {
 
 async function testGetUsuarioById(id: number) {
     try {
-        const getUsuario = await serviceUsuario.getUserById(id);
+        const getUsuario = await users_Service.getUserById(id);
         console.log(`Usuario com ID ${id}:`, getUsuario);
     } catch (error) {
         console.error(`Erro ao obter usuario com ID ${id}:`, error);
     }
 }
 
-async function testUpdateUsuarioById(id: number, usuario: Partial<Usuarios>) {
+async function testUpdateUsuarioById(id: number, usuario: Partial<Users>) {
     try {
-        const upUsuario = await serviceUsuario.updateUserById(id, usuario as Usuarios);
+        const upUsuario = await users_Service.updateUserById(id, usuario as Users);
         console.log(`Usuario com ID ${id} atualizado:`, upUsuario);
     } catch (error) {
         console.error(`Erro ao atualizar usuario com ID ${id}:`, error);
@@ -74,7 +74,7 @@ async function testUpdateUsuarioById(id: number, usuario: Partial<Usuarios>) {
 
 async function testRemoveUsuarioById(id: number) {
     try {
-        const removeUser = await serviceUsuario.removeUserById(id);
+        const removeUser = await users_Service.removeUserById(id);
         console.log(`Usuario com ID ${id} removido:`, removeUser);
     } catch (error) {
         console.error(`Erro ao remover usuario com ID ${id}:`, error);
@@ -83,7 +83,7 @@ async function testRemoveUsuarioById(id: number) {
 
 async function testUsuarioOuviu(idUser: number, idMusic : number) {
     try {
-        const upUser = await serviceUsuario.userListenedMusica(idUser, idMusic);
+        const upUser = await users_Service.userListenedMusica(idUser, idMusic);
         console.log(`Usuario com ID ${idUser} atualizado:`, upUser);
     } catch (error) {
         console.error(`Erro ao remover usuario com ID ${idUser}:`, error);
@@ -92,7 +92,7 @@ async function testUsuarioOuviu(idUser: number, idMusic : number) {
 
 async function testUsuarioJaOuviu(idUser: number, idMusic : number) {
     try {
-        const ans = await serviceUsuario.haveUserListenedMusica(idUser, idMusic);
+        const ans = await users_Service.haveUserListenedMusica(idUser, idMusic);
         console.log(`Usuario com ID ${idUser} ouviu a musica ${idMusic} ? `, ans);
     } catch (error) {
         console.error(`Erro ao atualizar usuario com ID ${idUser}:`, error);
@@ -151,10 +151,10 @@ async function runTests() {
 
 
 
-    const newUser : Partial<Usuarios> = { nome: "Jack new", email:`oi$@gmail.com`, foto:null, privilegio:true, senha:"123" };
+    const newUser : Partial<Users> = { nome: "Jack new", email:`oi$@gmail.com`, foto:null, privilegio:true, senha:"123" };
     await testCreateUsuario(newUser);    
 
-    const upUser : Partial<Usuarios> = { nome: "João", email:"soares@gmail.com", foto:null, privilegio:true, senha:"123" };
+    const upUser : Partial<Users> = { nome: "João", email:"soares@gmail.com", foto:null, privilegio:true, senha:"123" };
     await testUpdateUsuarioById(1, upUser);
 
 

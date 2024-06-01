@@ -50,6 +50,21 @@ class usersService {
         
     }
 
+    async getUsers()
+    {
+        try {
+            const users: Users[] | null = await prisma.users.findMany({
+                orderBy: { nome: "asc" },
+            });
+    
+            return users;
+
+        } catch (error) {
+            throw error;
+        }
+        
+    }
+
     async filterByPrivilegios(privilegio : boolean)
     {
 

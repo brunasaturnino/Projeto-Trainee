@@ -17,7 +17,7 @@ class musicasService {
     async getMusics() {
         return await prisma.musicas.findMany({
           orderBy: { nome: "asc" },
-          include: { artista: true, usuario: true },
+          include: { artista: true, user: true },
         });
       }
 
