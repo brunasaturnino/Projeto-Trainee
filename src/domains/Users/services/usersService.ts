@@ -1,13 +1,20 @@
-import { Usuarios } from "@prisma/client";
-import prisma from "../../../config/prismaClient";
+import { Users } from "@prisma/client";
+import prisma from "../../../../config/prismaClient";
 
-class usuariosService {
+class usersService {
 
-    async createUsuario(usuario : Usuarios)
+    async createUser(user : Users)
     {
         try {
-            await prisma.usuarios.create({
-                data: usuario
+            await prisma.users.create({
+                data : {
+                    name: user.name,
+                    email: user.email,
+                    password : user.password,
+                    privileges : Boolean(user.privileges),
+                    photo : user.photo
+
+                },
             });    
 
         } catch (error) {
@@ -19,7 +26,7 @@ class usuariosService {
     async getUserById(id : number)
     {
         try {
-            const user : Usuarios | null = await prisma.usuarios.findFirst({
+            const user : Users | null = await prisma.users.findFirst({
                 where : {
                     id: id
                 }
@@ -36,7 +43,7 @@ class usuariosService {
     async getUserByEmail(email : string)
     {
         try {
-            const user : Usuarios | null = await prisma.usuarios.findFirst({
+            const user : Users | null = await prisma.users.findFirst({
                 where : {
                     email: email
                 }
@@ -50,13 +57,28 @@ class usuariosService {
         
     }
 
-    async filterByPrivilegios(privilegio : boolean)
+    async getUsers()
+    {
+        try {
+            const users: Users[] | null = await prisma.users.findMany({
+                orderBy: { name: "asc" },
+            });
+    
+            return users;
+
+        } catch (error) {
+            throw error;
+        }
+        
+    }
+
+    async filterByPrivileges(privileges : boolean)
     {
 
         try {
-            const users : Usuarios[] | null = await prisma.usuarios.findMany({
+            const users : Users[] | null = await prisma.users.findMany({
                 where: {
-                    privilegio: privilegio
+                    privileges: privileges
                 }
             });
     
@@ -68,11 +90,19 @@ class usuariosService {
         
     }
 
-    async updateUserById(id : number, usuario : Usuarios)
+    async updateUserById(id : number, user : Users)
     {
         try {
-            await prisma.usuarios.update({
-                data: usuario,
+            await prisma.users.update({
+                data : {
+                    name: user.name,
+                    email: user.email,
+                    password : user.password,
+                    privileges : Boolean(user.privileges),
+                    photo : user.photo
+
+                },
+                
                 where: {
                     id: id
                 }           
@@ -83,11 +113,11 @@ class usuariosService {
         
     }
 
-    async updateUserByEmail(email : string, usuario : Usuarios)
+    async updateUserByEmail(email : string, user : Users)
     {
         try {
-            await prisma.usuarios.update({
-                data: usuario,
+            await prisma.users.update({
+                data: user,
                 where: {
                     email: email
                 }           
@@ -101,7 +131,7 @@ class usuariosService {
     async removeUserById(id : number)
     {
         try {
-            await prisma.usuarios.delete({
+            await prisma.users.delete({
                 where: {
                     id: id
                 }           
@@ -115,7 +145,7 @@ class usuariosService {
     async removeUserByEmail(email : string)
     {
         try {
-            await prisma.usuarios.delete({
+            await prisma.users.delete({
                 where: {
                     email: email
                 }           
@@ -126,43 +156,43 @@ class usuariosService {
 
     }
 
-    async haveUserListenedMusica(idUsuario : number, idMusica : number)
+    async haveUserListenedMusic(idUser : number, idMusic : number)
     {
         try {
-            const usuario : Usuarios | null = await prisma.usuarios.findFirst({
+            const user : Users | null = await prisma.users.findFirst({
                 where: {
-                    id: idUsuario
+                    id: idUser
                 },
     
                 include: {
-                    musicas: {
+                    musics: {
                         where: {
-                            id: idMusica
+                            id: idMusic
                         }
     
                     }
                 }
             })
             
-            return (usuario != null);
+            return (user != null);
         } catch (error) {
             throw error;
         }
         
     }
 
-    async userListenedMusica(idUsuario : number, idMusica : number)
+    async userListenedMusic(idUser : number, idMusic : number)
     {
         try {
-            await prisma.usuarios.update({
+            await prisma.users.update({
                 where: {
-                    id: idUsuario
+                    id: idUser
                 },
     
                 data: {
-                    musicas: {
+                    musics: {
                         connect: {
-                            id: idMusica,
+                            id: idMusic,
                         },
                     },
                 }
@@ -175,4 +205,4 @@ class usuariosService {
     }
 }
 
-export default usuariosService;
+export default usersService;

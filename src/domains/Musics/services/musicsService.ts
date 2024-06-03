@@ -1,13 +1,13 @@
-import { Musicas } from "@prisma/client";
-import prisma from "./../../../../config/prismaClient";
+import { Musics } from "@prisma/client";
+import prisma from "../../../../config/prismaClient";
 
 
-class musicasService {
+class musicsService {
 
-    async createMusica(musicas: Musicas) {
+    async createMusica(musics: Musics) {
         try {
-            await prisma.musicas.create({
-                data: musicas
+            await prisma.musics.create({
+                data: musics
             });
         } catch (error) {
             throw error;
@@ -15,15 +15,15 @@ class musicasService {
     }
 
     async getMusics() {
-        return await prisma.musicas.findMany({
-          orderBy: { nome: "asc" },
-          include: { artista: true, usuario: true },
+        return await prisma.musics.findMany({
+          orderBy: { name: "asc" },
+          include: { artist: true, user: true },
         });
       }
 
     async getMusicById(id: number) {
         try {
-            const music: Musicas | null = await prisma.musicas.findUnique({
+            const music: Musics | null = await prisma.musics.findUnique({
                 where: {
                     id: id,
                 },
@@ -34,9 +34,9 @@ class musicasService {
         }
     }
 
-    async updateMusicById(id: number, musica: Partial<Musicas>) {
+    async updateMusicById(id: number, musica: Partial<Musics>) {
         try {
-            const updatedMusic = await prisma.musicas.update({
+            const updatedMusic = await prisma.musics.update({
                 data: musica,
                 where: { id: id }
             });
@@ -48,7 +48,7 @@ class musicasService {
 
     async removeMusicById(id : number) {
         try {
-            const music: Musicas | null = await prisma.musicas.delete({
+            const music: Musics | null = await prisma.musics.delete({
                 where: {
                     id: id
                 }           
@@ -60,5 +60,5 @@ class musicasService {
     }
 }
 
-export default musicasService;
+export default musicsService;
 
