@@ -2,8 +2,9 @@ import cors, { CorsOptions } from "cors";
 import dotenv from "dotenv";
 import express, {Express} from "express";
 
-
-const userRouter = require('../src/domains/Usuarios/controllers/index')
+const userRouter = require("../src/domains/Users/controllers/index");
+const artistRouter = require("../src/domains/Artists/controllers/index");
+const musicRouter = require("../src/domains/Musics/controllers/index");
 
 dotenv.config();
 
@@ -19,3 +20,5 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 app.use('/users', userRouter);  
+app.use('/artists', artistRouter);  
+app.use('/musics', musicRouter);  
