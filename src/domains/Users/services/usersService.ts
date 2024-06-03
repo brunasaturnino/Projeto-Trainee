@@ -7,7 +7,14 @@ class usersService {
     {
         try {
             await prisma.users.create({
-                data: user
+                data : {
+                    name: user.name,
+                    email: user.email,
+                    password : user.password,
+                    privileges : Boolean(user.privileges),
+                    photo : user.photo
+
+                },
             });    
 
         } catch (error) {
@@ -87,7 +94,15 @@ class usersService {
     {
         try {
             await prisma.users.update({
-                data: user,
+                data : {
+                    name: user.name,
+                    email: user.email,
+                    password : user.password,
+                    privileges : Boolean(user.privileges),
+                    photo : user.photo
+
+                },
+                
                 where: {
                     id: id
                 }           
