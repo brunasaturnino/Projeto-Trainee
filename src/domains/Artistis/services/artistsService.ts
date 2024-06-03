@@ -1,11 +1,11 @@
-import { Artistas } from "@prisma/client";
-import prisma from "../../../config/prismaClient";
+import { Artists } from "@prisma/client";
+import prisma from "../../../../config/prismaClient";
 
-class artistasService {
-    async createArtista(artistas:Omit<Artistas, 'id'>) {
+class artistsService {
+    async createArtista(artists:Omit<Artists, 'id'>) {
         try {
-            const artist: Artistas | null =await prisma.artistas.create({
-                data: artistas
+            const artist: Artists | null =await prisma.artists.create({
+                data: artists
             });
             return artist;
         } catch (error) {
@@ -15,7 +15,7 @@ class artistasService {
 
     async getArtistById(id: number) {
         try {
-            const artist: Artistas | null = await prisma.artistas.findUnique({
+            const artist: Artists | null = await prisma.artists.findUnique({
                 where: {
                     id: id,
                 },
@@ -26,9 +26,9 @@ class artistasService {
         }
     }
 
-    async updateArtistById(id: number, artista: Partial<Artistas>) {
+    async updateArtistById(id: number, artista: Partial<Artists>) {
         try {
-            const updatedArtist = await prisma.artistas.update({
+            const updatedArtist = await prisma.artists.update({
                 data: artista,
                 where: { id: id }
             });
@@ -40,7 +40,7 @@ class artistasService {
 
     async removeArtistById(id : number) {
         try {
-            const artist: Artistas | null = await prisma.artistas.delete({
+            const artist: Artists | null = await prisma.artists.delete({
                 where: {
                     id: id
                 }           
@@ -52,4 +52,4 @@ class artistasService {
     }
 }
 
-export default artistasService;
+export default artistsService;

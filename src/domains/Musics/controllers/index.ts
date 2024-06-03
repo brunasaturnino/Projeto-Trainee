@@ -1,8 +1,8 @@
 import { Router, Request, Response, NextFunction } from "express";
-import musicasService from "../services/musicasService";
+import musicsService from "../services/musicsService";
 
 const router = Router();
-const musicService = new musicasService();
+const musicService = new musicsService();
 
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
     try {

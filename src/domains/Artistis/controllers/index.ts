@@ -1,8 +1,8 @@
 import { Router, Request, Response, NextFunction } from "express";
-import artistasService from "../services/artistasService";
+import artistsService from "../services/artistsService";
 
 const router = Router();
-const service = new artistasService();
+const service = new artistsService();
 
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     try {

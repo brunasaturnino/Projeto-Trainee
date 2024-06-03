@@ -10,27 +10,27 @@ datasource db {
 model Users {
   id         Int @id @default(autoincrement())
   email      String @unique
-  name      String 
-  password      String
-  photo       String? // ? representa opcional
+  name       String 
+  password   String
+  photo      String? // ? representa opcional
   privileges Boolean
-  musics    Musicas[] 
+  musics     Musics[] 
 }
 
 model Artists {
-  id               Int      @id @default(autoincrement())
-  name             String
-  photo             String?
-  streams          Int      @default(0)
-  musics          Musicas[]
+  id              Int      @id @default(autoincrement())
+  name            String
+  photo           String?
+  streams         Int      @default(0)
+  musics          Musics[]
 }
 
-model Musicas {
-  id        Int      @id @default(autoincrement())
-  name      String
+model Musics {
+  id       Int      @id @default(autoincrement())
+  name     String
   genre    String
-  album     String
+  album    String
   artistId Int
   artist   Artists  @relation(fields: [artistId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user   Users[]
+  user     Users[]
 }
