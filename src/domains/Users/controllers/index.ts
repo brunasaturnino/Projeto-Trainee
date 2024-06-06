@@ -3,13 +3,14 @@ import usersService from "../services/usersService";
 import { ObjectEnumValue } from "@prisma/client/runtime/library";
 import { Users } from "@prisma/client";
 import { login, verifyJWT } from "../../../middlewares/auth";
+import { verify } from "jsonwebtoken";
 
 const router : Router = Router();
 const Service = new usersService();
 
 router.post("/login", login);
 
-router.get('/', async (req : Request, res : Response, next : NextFunction) => {
+router.get('/', verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
         const users : Users[] = await Service.getUsers(); 
@@ -21,7 +22,7 @@ router.get('/', async (req : Request, res : Response, next : NextFunction) => {
     
 })
 
-router.get('/privilege/:privilege', async (req : Request, res : Response, next : NextFunction) => {
+router.get('/privilege/:privilege', verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
         const { privilege } = req.params;
@@ -34,7 +35,7 @@ router.get('/privilege/:privilege', async (req : Request, res : Response, next :
     
 })
 
-router.get('/id/:id', async (req : Request, res : Response, next : NextFunction) => {
+router.get('/id/:id', verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
         const { id } = req.params;
@@ -47,7 +48,7 @@ router.get('/id/:id', async (req : Request, res : Response, next : NextFunction)
     
 })
 
-router.get('/listened/:idUser:idMusic', async (req : Request, res : Response, next : NextFunction) => {
+router.get('/listened/:idUser:idMusic', verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
         const { idUser, idMusic } = req.params;
@@ -60,7 +61,7 @@ router.get('/listened/:idUser:idMusic', async (req : Request, res : Response, ne
     
 })
 
-router.get('/email/:email', async (req : Request, res : Response, next : NextFunction) => {
+router.get('/email/:email', verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
         const { email } = req.params;
@@ -73,7 +74,7 @@ router.get('/email/:email', async (req : Request, res : Response, next : NextFun
     
 })
 
-router.post("/", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user : Users = req.body;
         await Service.createUser(user);
@@ -84,7 +85,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 
-router.put("/id/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.put("/id/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         const user : Users = req.body;
@@ -95,7 +96,7 @@ router.put("/id/:id", async (req: Request, res: Response, next: NextFunction) =>
     }
 });
 
-router.put("/email/:email", async (req: Request, res: Response, next: NextFunction) => {
+router.put("/email/:email", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email } = req.params;
         const user : Users = req.body;
@@ -107,7 +108,7 @@ router.put("/email/:email", async (req: Request, res: Response, next: NextFuncti
 });
 
 
-router.get('/listened/:idUser:idMusic', async (req : Request, res : Response, next : NextFunction) => {
+router.get('/listened/:idUser:idMusic', verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
         const { idUser, idMusic } = req.params;
@@ -120,7 +121,7 @@ router.get('/listened/:idUser:idMusic', async (req : Request, res : Response, ne
     
 })
 
-router.delete("/id/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/id/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         await Service.removeUserById(Number(id));
@@ -131,7 +132,7 @@ router.delete("/id/:id", async (req: Request, res: Response, next: NextFunction)
 });
 
 
-router.delete("/email/:email", async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/email/:email", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email } = req.params;
         await Service.removeUserByEmail(email);
