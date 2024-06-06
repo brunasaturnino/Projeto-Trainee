@@ -2,13 +2,15 @@ import { Router, Request, Response, NextFunction } from "express";;
 import usersService from "../services/usersService";
 import { ObjectEnumValue } from "@prisma/client/runtime/library";
 import { Users } from "@prisma/client";
-import { login, verifyJWT } from "../../../middlewares/auth";
+import { login, logout,  notLoggedIn, verifyJWT } from "../../../middlewares/auth";
 import { verify } from "jsonwebtoken";
 
 const router : Router = Router();
 const Service = new usersService();
 
-router.post("/login", login);
+router.post("/login", notLoggedIn, login);
+
+router.post("logout", verifyJWT, logout);
 
 router.get('/', verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
     
