@@ -8,7 +8,7 @@ const service = new artistsService();
 
 router.post('/', verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const artist = await service.createArtista(req.body);
+        const artist = await service.createArtist(req.body);
         res.status(statusCodes.CREATED).json(artist);
     } catch (error) {
         next(error);
