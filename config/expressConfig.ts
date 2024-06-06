@@ -19,6 +19,6 @@ app.use(cors(options));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.use('/users', userRouter);  
-app.use('/artists', artistRouter);  
-app.use('/musics', musicRouter);  
+app.use("/api/users", userRouter);  
+app.use("/api/artists", artistRouter);  
+app.use("/api/musics", musicRouter);  
