@@ -73,3 +73,27 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         next(error);
     }
 }
+
+export function logout(req: Request, res: Response) {
+    res.clearCookie("jwt", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== "development",
+    });
+    res.status(statusCodes.NO_CONTENT).json("Logout efetuado com sucesso!");
+}
+
+export function notLoggedIn(req: Request, res: Response, next: NextFunction) {
+    try {
+        const token = cookieExtractor(req);
+        if (token) {
+            const decoded = verify(token, process.env.SECRET_KEY || "") as JwtPayload;
+            req.user = decoded.user;
+        }
+        if (req.user != null) {
+            throw new TokenError("Você já está logado!");
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
+}

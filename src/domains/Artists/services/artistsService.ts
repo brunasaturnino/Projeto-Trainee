@@ -1,53 +1,64 @@
 import { Artists } from "@prisma/client";
 import prisma from "../../../../config/prismaClient";
+import {QueryError} from  "../../../../errors/errors/QueryError";    
+import {InvalidParamError} from  "../../../../errors/errors/InvalidParamError"; 
+import {InvalidRouteError} from  "../../../../errors/errors/InvalidRouteError"; 
 
 class artistsService {
-    async createArtista(artists:Omit<Artists, 'id'>) {
+    async createArtist(body: Omit<Artists, 'id'>) {
         try {
-            const artist: Artists | null =await prisma.artists.create({
-                data: artists
+            const newArtist: Artists | null = await prisma.artists.create({
+                data: body
             });
-            return artist;
+            return newArtist;
         } catch (error) {
-            throw error;
+            throw new QueryError("Failed to create artist");
         }
     }
 
     async getArtistById(id: number) {
         try {
+            if (isNaN(id)) {
+                throw new InvalidParamError("Invalid artist ID");
+            }
             const artist: Artists | null = await prisma.artists.findUnique({
-                where: {
-                    id: id,
-                },
+                where: { id },
             });
+            if (!artist) {
+                throw new InvalidRouteError("Artist not found");
+            }
             return artist;
         } catch (error) {
-            throw error;
+            throw new QueryError("Failed to retrieve artist");
         }
     }
 
-    async updateArtistById(id: number, artista: Partial<Artists>) {
+    async updateArtistById(id: number, body: Partial<Artists>) {
         try {
+            if (isNaN(id)) {
+                throw new InvalidParamError("Invalid artist ID");
+            }
             const updatedArtist = await prisma.artists.update({
-                data: artista,
-                where: { id: id }
+                data: body,
+                where: { id }
             });
             return updatedArtist;
         } catch (error) {
-            throw error;
+            throw new QueryError("Failed to update artist");
         }
     }
 
-    async removeArtistById(id : number) {
+    async removeArtistById(id: number) {
         try {
-            const artist: Artists | null = await prisma.artists.delete({
-                where: {
-                    id: id
-                }           
+            if (isNaN(id)) {
+                throw new InvalidParamError("Invalid artist ID");
+            }
+            const deletedArtist: Artists | null = await prisma.artists.delete({
+                where: { id }
             });
-            return artist;
+            return deletedArtist;
         } catch (error) {
-            throw error;
+            throw new QueryError("Failed to delete artist");
         }
     }
 }
