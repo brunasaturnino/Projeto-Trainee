@@ -5,10 +5,10 @@ import {InvalidParamError} from  "../../../../errors/errors/InvalidParamError";
 import {InvalidRouteError} from  "../../../../errors/errors/InvalidRouteError"; 
 
 class artistsService {
-    async createArtist(artist: Omit<Artists, 'id'>) {
+    async createArtist(body: Omit<Artists, 'id'>) {
         try {
             const newArtist: Artists | null = await prisma.artists.create({
-                data: artist
+                data: body
             });
             return newArtist;
         } catch (error) {
@@ -33,13 +33,13 @@ class artistsService {
         }
     }
 
-    async updateArtistById(id: number, artist: Partial<Artists>) {
+    async updateArtistById(id: number, body: Partial<Artists>) {
         try {
             if (isNaN(id)) {
                 throw new InvalidParamError("Invalid artist ID");
             }
             const updatedArtist = await prisma.artists.update({
-                data: artist,
+                data: body,
                 where: { id }
             });
             return updatedArtist;
