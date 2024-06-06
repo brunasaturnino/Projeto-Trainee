@@ -6,7 +6,7 @@ import statusCodes from "../../utils/constants/statusCode";
 import { Users } from "@prisma/client";
 import { sign } from "jsonwebtoken";
 
-function genereteJWT(user: Users) {
+function genereteJWT(user: Users, res: Response) {
     const body = {
         id: user.id,
         email: user.email,
@@ -15,6 +15,11 @@ function genereteJWT(user: Users) {
     }
 
     const token = sign({user: body}, process.env.SECRET_KEY || "", {expiresIn: process.env.JWT_EXPIRATION});
+    res.cookie("jwt", token, {
+        httpOnly: true, 
+        secure: process.env.NODE_ENV !== "development",
+        
+    });
 }
 
 export async function login(req: Request, res: Response, next: NextFunction) {
