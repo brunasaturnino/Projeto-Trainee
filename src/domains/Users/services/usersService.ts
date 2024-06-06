@@ -1,8 +1,13 @@
 import { Users } from "@prisma/client";
 import prisma from "../../../../config/prismaClient";
+import bcrypt from "bcrypt";
 
 class usersService {
-
+    async encriptpassword(password : string){
+        const saltRounds = 10;
+        const encrypted = bcrypt.hashSync(password, saltRounds);
+        return encrypted;
+    }
     async createUser(user : Users)
     {
         try {
