@@ -4,7 +4,9 @@ import { PermissionError } from "../../errors/errors/PermissionError";
 import bcrypt from "bcrypt";
 import statusCodes from "../../utils/constants/statusCode";
 import { Users } from "@prisma/client";
-import { sign } from "jsonwebtoken";
+import { sign, verify } from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
+import { TokenError } from "../../errors/errors/TokenError";
 
 function genereteJWT(user: Users, res: Response) {
     const body = {
@@ -20,6 +22,30 @@ function genereteJWT(user: Users, res: Response) {
         secure: process.env.NODE_ENV !== "development",
         
     });
+}
+
+function cookieExtractor(req: Request) {
+    let token = null;
+    if(req.cookies){
+        token = req.cookies["jwt"];
+    }
+    return token;
+}
+
+export function verifyJWT(req: Request, res: Response, next: NextFunction) {
+   try{
+        const token = cookieExtractor(req);
+        if(token){
+            const decoded = verify(token, process.env.SECRET_KEY || "") as JwtPayload;
+            req.user = decoded.user;
+        }
+        if(req.user == null){
+            throw new TokenError("Você precisa estar logado para realizar está ação!")
+        }
+        next();
+   }catch(error){
+       next(error);
+   }
 }
 
 export async function login(req: Request, res: Response, next: NextFunction) {
@@ -40,7 +66,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
             throw new PermissionError("Email e/ou senha incorretos");
         }
 
-        genereteJWT();
+        genereteJWT(user, res);
 
         res.status(statusCodes.NO_CONTENT).json("Login efetuado com sucesso!")
     } catch (error) {
