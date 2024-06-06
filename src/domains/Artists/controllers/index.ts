@@ -1,10 +1,11 @@
 import { Router, Request, Response, NextFunction } from "express";
 import artistsService from "../services/artistsService";
+import { verifyJWT } from "../../../middlewares/auth";
 
 const router : Router = Router();
 const service = new artistsService();
 
-router.post('/', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/', verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const artist = await service.createArtista(req.body);
         res.status(201).json(artist);
@@ -13,7 +14,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     }
 });
 
-router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/:id', verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const artist = await service.getArtistById(Number(req.params.id));
         if (artist) {
@@ -26,7 +27,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
     }
 });
 
-router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
+router.put('/:id', verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const updatedArtist = await service.updateArtistById(Number(req.params.id), req.body);
         res.status(200).json(updatedArtist);
@@ -35,7 +36,7 @@ router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
     }
 });
 
-router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
+router.delete('/:id', verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const artist = await service.removeArtistById(Number(req.params.id));
         res.status(200).json(artist);
