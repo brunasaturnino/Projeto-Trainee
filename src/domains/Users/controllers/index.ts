@@ -31,6 +31,16 @@ router.get("/users/account", verifyJWT, async (req: Request, res: Response, next
     }
 });
 
+router.put("/users/account/update", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+   try{
+        const user : Users = req.body;
+        await Service.updateUserByEmail(req.user.email, user);
+        res.status(202).send("Usuário atualizado com sucesso!");
+   }catch(error){
+        next(error);
+   } 
+});
+
 router.get('/', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
