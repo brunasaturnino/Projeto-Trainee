@@ -63,7 +63,8 @@ class musicsService {
         return await prisma.musics.findMany({
             where: {
                 artistId: artistId
-            }
+            },
+            orderBy: { name: "asc" },
         });
     }
 }
