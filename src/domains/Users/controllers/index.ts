@@ -82,7 +82,15 @@ router.delete("users/account/unlisten/:id", verifyJWT, async (req : Request, res
     
 });
 
-
+router.get("users/account/musics", verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
+    try{
+        const musics = await Service.getAllMusicasListenedByUser(req.user.id);
+        res.status(200).json(musics);
+    }catch(error){
+        next(error);
+    }
+});
+    
 
 
 router.get('/', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
