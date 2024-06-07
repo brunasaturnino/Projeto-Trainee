@@ -91,7 +91,6 @@ router.get("users/account/musics", verifyJWT, async (req : Request, res : Respon
     }
 });
     
-
 router.get('/users', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
@@ -117,7 +116,7 @@ router.get('/privilege/:privilege', verifyJWT, async (req : Request, res : Respo
     
 })
 
-router.get('/id/:id', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
+router.get('/users/:id', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
         const { id } = req.params;
@@ -157,7 +156,7 @@ router.get('/email/:email', verifyJWT, checkRole, async (req : Request, res : Re
 })
 
 
-router.put("/id/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/users/update/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         const user : Users = req.body;
@@ -182,7 +181,7 @@ router.put("/email/:email", verifyJWT, checkRole, async (req: Request, res: Resp
 
 
 
-router.delete("/id/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/users/delete/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         await Service.removeUserById(Number(id));

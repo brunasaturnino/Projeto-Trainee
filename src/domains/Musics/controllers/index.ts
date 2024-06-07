@@ -24,7 +24,7 @@ router.get("/musics/:id", verifyJWT, async (req: Request, res: Response, next: N
     }
 });
 
-router.post("/", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/musics/create", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const music = req.body;
         await musicService.createMusica(music);
@@ -34,7 +34,7 @@ router.post("/", verifyJWT, checkRole, async (req: Request, res: Response, next:
     }
 });
 
-router.put("/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/musics/update/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         const music = req.body;
@@ -45,7 +45,7 @@ router.put("/:id", verifyJWT, checkRole, async (req: Request, res: Response, nex
     }
 });
 
-router.delete("/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/musiscs/delete/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         await musicService.removeMusicById(Number(id));

@@ -9,7 +9,7 @@ import {InvalidRouteError} from  "../../../../errors/errors/InvalidRouteError";
 const router: Router = Router();
 const service = new artistsService();
 
-router.post('/', verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.post('/artists/create', verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.body.name || !req.body.genre) {
             throw new InvalidParamError("Name and genre are required");
@@ -47,7 +47,7 @@ router.get('artists/:id', verifyJWT, async (req: Request, res: Response, next: N
     }
 });
 
-router.put('/:id', verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.put('/artists/update/:id', verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const artistId = Number(req.params.id);
         if (isNaN(artistId)) {
@@ -60,7 +60,7 @@ router.put('/:id', verifyJWT, checkRole, async (req: Request, res: Response, nex
     }
 });
 
-router.delete('/:id', verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.delete('/artists/delete/:id', verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const artistId = Number(req.params.id);
         if (isNaN(artistId)) {
