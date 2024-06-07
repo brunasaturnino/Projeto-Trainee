@@ -97,3 +97,11 @@ export function notLoggedIn(req: Request, res: Response, next: NextFunction) {
         next(error);
     }
 }
+
+export function checkRole(req: Request, res: Response, next: NextFunction) {
+    if(req.user.privileges == true){
+        next();
+    }else{
+        throw new PermissionError("Você não tem permissão para realizar esta ação!");
+    }
+} 
