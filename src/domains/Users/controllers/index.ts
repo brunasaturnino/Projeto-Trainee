@@ -22,6 +22,14 @@ router.post("/users/create", async (req: Request, res: Response, next: NextFunct
     }
 });
 
+router.get("/users/account", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const user : Users = await Service.getUserByEmail(req.user.email);
+        res.status(200).json(user);
+    }catch(error){
+        next(error);
+    }
+});
 
 router.get('/', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
     
