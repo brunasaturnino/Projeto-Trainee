@@ -55,6 +55,14 @@ router.delete("/:id", verifyJWT, checkRole, async (req: Request, res: Response, 
     }
 });
 
-
+router.get("/musics/artist/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const { id } = req.params;
+        const musics = await musicService.getAllMusicsByArtistId(Number(id));
+        res.json(musics);
+    }catch(error){
+        next(error);
+    }
+});
 
 export default router; 
