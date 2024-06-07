@@ -14,8 +14,9 @@ router.post("/users/logout", verifyJWT, logout);
 
 router.post("/users/create", async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const currentUser = req.user;
         const user : Users = req.body;
-        await Service.createUser(user);
+        await Service.createUser(user, currentUser);
         res.status(201).send();
     } catch (error) {
         next(error);
@@ -102,6 +103,16 @@ router.get('/users', verifyJWT, checkRole, async (req : Request, res : Response,
     }
     
 })
+
+router.post("users/admin/create", verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
+    try{
+        const user : Users = req.body;
+        await Service.createUser(user, req.user);
+        res.status(201).send();
+    }catch(error){
+        next(error);
+    }
+});
 
 router.get('/privilege/:privilege', verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
     
