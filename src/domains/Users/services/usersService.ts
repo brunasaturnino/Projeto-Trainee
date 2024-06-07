@@ -229,6 +229,25 @@ class usersService {
         }
     }
 
+    async getAllMusicasListenedByUser(idUser : number){
+        try {
+            const user = await prisma.users.findFirst({
+                where: {
+                    id: idUser
+                },
+    
+                include: {
+                    musics: true
+                }
+            })
+            
+            return user.musics;
+        } catch (error) {
+            throw error;
+        }
+    }
+   
+
     async updateUserPasswordByEmail(email : string, password : string)
     {
         try {
