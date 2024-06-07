@@ -12,6 +12,18 @@ router.post("/login", notLoggedIn, login);
 
 router.post("logout", verifyJWT, logout);
 
+router.post("/users/create", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user : Users = req.body;
+        await Service.createUser(user);
+        res.status(201).send();
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+
 router.get('/', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
@@ -75,16 +87,6 @@ router.get('/email/:email', verifyJWT, checkRole, async (req : Request, res : Re
     }
     
 })
-
-router.post("/", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const user : Users = req.body;
-        await Service.createUser(user);
-        res.status(201).send();
-    } catch (error) {
-        next(error);
-    }
-});
 
 
 router.put("/id/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
