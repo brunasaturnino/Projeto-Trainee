@@ -30,7 +30,7 @@ router.get("/artists", verifyJWT, async(req: Request, res: Response, next: NextF
     }
 });
 
-router.get('/:id', verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.get('artists/:id', verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const artistId = Number(req.params.id);
         if (isNaN(artistId)) {
