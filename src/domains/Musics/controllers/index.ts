@@ -5,7 +5,7 @@ import { checkRole, verifyJWT } from "../../../middlewares/auth";
 const router : Router = Router();
 const musicService = new musicsService();
 
-router.get("/", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/musics", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const musics = await musicService.getMusics();
         res.json(musics);
