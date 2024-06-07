@@ -41,6 +41,25 @@ router.put("/users/account/update", verifyJWT, async (req: Request, res: Respons
    } 
 });
 
+router.put("/users/account/password", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const { password } = req.body;
+        await Service.updateUserPasswordByEmail(req.user.email, password);
+        res.status(202).send("Senha atualizada com sucesso!");
+    }catch(error){
+        next(error);
+    }
+});
+
+router.delete("/users/account/delete", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        await Service.removeUserByEmail(req.user.email);
+        res.status(202).send("Usuário deletado com sucesso!");
+    }catch(error){
+        next(error);
+    }
+});
+
 router.get('/', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
