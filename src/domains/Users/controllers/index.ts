@@ -8,9 +8,9 @@ import { verify } from "jsonwebtoken";
 const router : Router = Router();
 const Service = new usersService();
 
-router.post("/login", notLoggedIn, login);
+router.post("/users/login", notLoggedIn, login);
 
-router.post("logout", verifyJWT, logout);
+router.post("/users/logout", verifyJWT, logout);
 
 router.post("/users/create", async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -21,7 +21,6 @@ router.post("/users/create", async (req: Request, res: Response, next: NextFunct
         next(error);
     }
 });
-
 
 
 router.get('/', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
