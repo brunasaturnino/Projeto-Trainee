@@ -210,6 +210,25 @@ class usersService {
         
     }
 
+    async removeUserListenedMusic(idUser: number, idMusic: number) {
+        try {
+            await prisma.users.update({
+                where: {
+                    id: idUser
+                },
+                data: {
+                    musics: {
+                        disconnect: {
+                            id: idMusic,
+                        },
+                    },
+                }
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async updateUserPasswordByEmail(email : string, password : string)
     {
         try {

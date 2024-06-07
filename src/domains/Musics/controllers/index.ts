@@ -14,7 +14,7 @@ router.get("/musics", verifyJWT, async (req: Request, res: Response, next: NextF
     }
 });
 
-router.get("/musics/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/musics/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         const music = await musicService.getMusicById(Number(id));
