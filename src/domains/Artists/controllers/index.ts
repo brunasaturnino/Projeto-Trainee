@@ -21,6 +21,15 @@ router.post('/', verifyJWT, checkRole, async (req: Request, res: Response, next:
     }
 });
 
+router.get("/artists", verifyJWT, async(req: Request, res: Response, next: NextFunction) => {
+    try{
+        const artists = await service.getAllArtists();
+        res.status(statusCodes.SUCCESS).json(artists);
+    }catch(error){
+        next(error);
+    }
+});
+
 router.get('/:id', verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const artistId = Number(req.params.id);
