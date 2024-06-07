@@ -61,6 +61,17 @@ class artistsService {
             throw new QueryError("Failed to delete artist");
         }
     }
+
+    async getAllArtists() {
+        try {
+            const artists: Artists[] = await prisma.artists.findMany({
+                orderBy: { name: 'asc' }
+            });
+            return artists;
+        } catch (error) {
+            throw new QueryError("Failed to retrieve artists");
+        }
+    }
 }
 
 export default artistsService;
