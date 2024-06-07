@@ -148,14 +148,12 @@ router.put("/email/:email", verifyJWT, checkRole, async (req: Request, res: Resp
 });
 
 
-router.get('/listened/:idUser:idMusic', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
-    
-    try {
-        const { idUser, idMusic } = req.params;
-        await Service.userListenedMusic(Number(idUser), Number(idUser)); 
-        res.status(202);
-
-    } catch (error) {
+router.get("users/account/listen/:id", verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
+    try{
+        const { id } = req.params;
+        await Service.userListenedMusic(req.user.id, Number(id));
+        res.status(202).send();
+    }catch(error){
         next(error);
     }
     
