@@ -60,6 +60,31 @@ router.delete("/users/account/delete", verifyJWT, async (req: Request, res: Resp
     }
 });
 
+router.post("users/account/listen/:id", verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
+    try{
+        const { id } = req.params;
+        await Service.userListenedMusic(req.user.id, Number(id));
+        res.status(202).send("Música ouvida com sucesso!");
+    }catch(error){
+        next(error);
+    }
+    
+});
+
+router.delete("users/account/unlisten/:id", verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
+    try{
+        const { id } = req.params;
+        await Service.removeUserListenedMusic(req.user.id, Number(id));
+        res.status(202).send("Música desmarcada com sucesso!");
+    }catch(error){
+        next(error);
+    }
+    
+});
+
+
+
+
 router.get('/', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
@@ -148,16 +173,7 @@ router.put("/email/:email", verifyJWT, checkRole, async (req: Request, res: Resp
 });
 
 
-router.get("users/account/listen/:id", verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
-    try{
-        const { id } = req.params;
-        await Service.userListenedMusic(req.user.id, Number(id));
-        res.status(202).send();
-    }catch(error){
-        next(error);
-    }
-    
-})
+
 
 router.delete("/id/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
