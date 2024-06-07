@@ -209,6 +209,27 @@ class usersService {
         }
         
     }
+
+    async updateUserPasswordByEmail(email : string, password : string)
+    {
+        try {
+            const encrypted = await this.encriptPassword(password);
+            await prisma.users.update({
+                where: {
+                    email: email
+                },
+    
+                data: {
+                    password: encrypted
+                }
+            })
+            
+        } catch (error) {
+            throw error;
+        }
+        
+    }
 }
+
 
 export default usersService;
