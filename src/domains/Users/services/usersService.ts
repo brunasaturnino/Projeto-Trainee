@@ -61,19 +61,19 @@ class usersService {
 
     async getUserByEmail(email : string)
     {
-        try {
-            const user : Users | null = await prisma.users.findFirst({
-                where : {
-                    email: email
-                }
-            });
-    
-            return user;
+        if(!isValidEmail(email))
+            throw new InvalidParamError('Invalid param');
 
-        } catch (error) {
-            throw error;
-        }
-        
+        const user : Users | null = await prisma.users.findFirst({
+            where : {
+                email: email
+            }
+        });
+
+        if (!user)
+            throw new QueryError("This account doesn't exist");
+
+        return user;
     }
 
     async getUsers()
