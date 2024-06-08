@@ -22,7 +22,11 @@ class usersService {
         if (user.privileges && !currentUser.privileges)
             throw new Error('Only administrators can create new administrators');
         
-        const userExist = await this.getUserByEmail(user.email);
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                email: user.email
+            }
+        })
 
         if (userExist) 
             throw new QueryError("This email is already registered");
