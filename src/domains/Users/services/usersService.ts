@@ -1,6 +1,9 @@
 import { Users } from "@prisma/client";
 import prisma from "../../../../config/prismaClient";
 import bcrypt from "bcrypt";
+import { QueryError } from "../../../../errors/errors/QueryError";
+import { isValidEmail, isValidPhoto, isEmpty } from "../../../../utils/auxiliary/auxiliaryFunctions"
+import { InvalidParamError } from "../../../../errors/errors/InvalidParamError";
 
 class usersService {
     async encriptPassword(password : string){
@@ -8,27 +11,34 @@ class usersService {
         const encrypted = await bcrypt.hashSync(password, saltRounds);
         return encrypted;
     }
-    async createUser(user : Users, currentUser)
+
+    async createUser(user : Users, currentUser : Users | null)
     {
-        try {
-            if (user.privileges && !currentUser.privileges) {
-                throw new Error('Somente administradores podem criar outros administradores');
-            }
-            const encrypted = await this.encriptPassword(user.password);
-            await prisma.users.create({
-                data : {
-                    name: user.name,
-                    email: user.email,
-                    password : encrypted,
-                    privileges : Boolean(user.privileges),
-                    photo : user.photo
+    
+        if (!isValidEmail(user.email) || isEmpty(user.name) ||
+        isEmpty(user.password) || isValidPhoto(user.photo))
+            throw new InvalidParamError('Invalid param');
+        
+        if (user.privileges && !currentUser.privileges)
+            throw new Error('Only administrators can create new administrators');
+        
+        const userExist = await this.getUserByEmail(user.email);
 
-                },
-            });    
+        if (userExist) 
+            throw new QueryError("This email is already registered");
+        
+        const encrypted = await this.encriptPassword(user.password);
 
-        } catch (error) {
-            throw error;
-        }
+        await prisma.users.create({
+            data : {
+                name: user.name,
+                email: user.email,
+                password : encrypted,
+                privileges : Boolean(user.privileges),
+                photo : user.photo
+
+            },
+        });    
         
     }
 
