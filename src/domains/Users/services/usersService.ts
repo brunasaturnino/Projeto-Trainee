@@ -2,7 +2,7 @@ import { Users } from "@prisma/client";
 import prisma from "../../../../config/prismaClient";
 import bcrypt from "bcrypt";
 import { QueryError } from "../../../../errors/errors/QueryError";
-import { isValidEmail, isValidPhoto, isEmpty } from "../../../../utils/auxiliary/auxiliaryFunctions"
+import { isValidEmail, isValidPhoto, isValidPrivileges,isEmpty } from "../../../../utils/auxiliary/auxiliaryFunctions"
 import { InvalidParamError } from "../../../../errors/errors/InvalidParamError";
 
 class usersService {
@@ -94,20 +94,20 @@ class usersService {
 
     async filterByPrivileges(privileges : boolean)
     {
+        if(!isValidPrivileges(privileges))
+            throw new InvalidParamError('Invalid param');
 
-        try {
-            const users : Users[] | null = await prisma.users.findMany({
-                where: {
-                    privileges: privileges
-                }
-            });
     
-            return users;
+        const users : Users[] | null = await prisma.users.findMany({
+            where: {
+                privileges: privileges
+            }
+        });
 
-        } catch (error) {
-            throw error;
-        }
-        
+        if (!users)
+            throw new QueryError("Database empty");
+
+        return users;    
     }
 
     async updateUserById(id : number, user : Users)

@@ -20,6 +20,13 @@ export function isValidPhoto(photo : string) {
 
 }
 
+
+export function isValidPrivileges(privileges : boolean) {
+
+    return privileges == true || privileges == false;
+
+}
+
 export  function isEmpty(name : string) {
 
     return name == "";
