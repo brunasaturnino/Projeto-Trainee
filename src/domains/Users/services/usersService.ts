@@ -44,19 +44,19 @@ class usersService {
 
     async getUserById(id : number)
     {
-        try {
-            const user : Users | null = await prisma.users.findFirst({
-                where : {
-                    id: id
-                }
-            });    
-
-            return user;
-
-        } catch (error) {
-            throw error;
-        }
+        if(isNaN(id))
+            throw new InvalidParamError('Invalid param');
+            
+        const user : Users | null = await prisma.users.findFirst({
+            where : {
+                id: id
+            }
+        }); 
         
+        if (!user)
+            throw new QueryError("This account doesn't exist");
+            
+        return user;
     }
 
     async getUserByEmail(email : string)
