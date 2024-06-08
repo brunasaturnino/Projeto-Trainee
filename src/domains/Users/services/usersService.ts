@@ -8,9 +8,12 @@ class usersService {
         const encrypted = await bcrypt.hashSync(password, saltRounds);
         return encrypted;
     }
-    async createUser(user : Users)
+    async createUser(user : Users, currentUser)
     {
         try {
+            if (user.privileges && !currentUser.privileges) {
+                throw new Error('Somente administradores podem criar outros administradores');
+            }
             const encrypted = await this.encriptPassword(user.password);
             await prisma.users.create({
                 data : {
@@ -209,6 +212,65 @@ class usersService {
         }
         
     }
+
+    async removeUserListenedMusic(idUser: number, idMusic: number) {
+        try {
+            await prisma.users.update({
+                where: {
+                    id: idUser
+                },
+                data: {
+                    musics: {
+                        disconnect: {
+                            id: idMusic,
+                        },
+                    },
+                }
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getAllMusicasListenedByUser(idUser : number){
+        try {
+            const user = await prisma.users.findFirst({
+                where: {
+                    id: idUser
+                },
+    
+                include: {
+                    musics: true
+                }
+            })
+            
+            return user.musics;
+        } catch (error) {
+            throw error;
+        }
+    }
+   
+
+    async updateUserPasswordByEmail(email : string, password : string)
+    {
+        try {
+            const encrypted = await this.encriptPassword(password);
+            await prisma.users.update({
+                where: {
+                    email: email
+                },
+    
+                data: {
+                    password: encrypted
+                }
+            })
+            
+        } catch (error) {
+            throw error;
+        }
+        
+    }
 }
+
 
 export default usersService;

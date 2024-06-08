@@ -58,6 +58,15 @@ class musicsService {
             throw error;
         }
     }
+
+    async getAllMusicsByArtistId(artistId: number) {
+        return await prisma.musics.findMany({
+            where: {
+                artistId: artistId
+            },
+            orderBy: { name: "asc" },
+        });
+    }
 }
 
 export default musicsService;

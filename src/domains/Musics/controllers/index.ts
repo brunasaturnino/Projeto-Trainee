@@ -1,11 +1,11 @@
 import { Router, Request, Response, NextFunction } from "express";
 import musicsService from "../services/musicsService";
-import { verifyJWT } from "../../../middlewares/auth";
+import { checkRole, verifyJWT } from "../../../middlewares/auth";
 
 const router : Router = Router();
 const musicService = new musicsService();
 
-router.get("/", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/musics", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const musics = await musicService.getMusics();
         res.json(musics);
@@ -14,7 +14,7 @@ router.get("/", verifyJWT, async (req: Request, res: Response, next: NextFunctio
     }
 });
 
-router.get("/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/musics/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         const music = await musicService.getMusicById(Number(id));
@@ -24,7 +24,7 @@ router.get("/:id", verifyJWT, async (req: Request, res: Response, next: NextFunc
     }
 });
 
-router.post("/", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/musics/create", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const music = req.body;
         await musicService.createMusica(music);
@@ -34,7 +34,7 @@ router.post("/", verifyJWT, async (req: Request, res: Response, next: NextFuncti
     }
 });
 
-router.put("/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/musics/update/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         const music = req.body;
@@ -45,7 +45,7 @@ router.put("/:id", verifyJWT, async (req: Request, res: Response, next: NextFunc
     }
 });
 
-router.delete("/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/musiscs/delete/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         await musicService.removeMusicById(Number(id));
@@ -55,6 +55,14 @@ router.delete("/:id", verifyJWT, async (req: Request, res: Response, next: NextF
     }
 });
 
-
+router.get("/musics/artist/:id", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const { id } = req.params;
+        const musics = await musicService.getAllMusicsByArtistId(Number(id));
+        res.json(musics);
+    }catch(error){
+        next(error);
+    }
+});
 
 export default router; 
