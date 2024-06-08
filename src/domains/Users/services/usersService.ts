@@ -16,7 +16,7 @@ class usersService {
     {
     
         if (!isValidEmail(user.email) || isEmpty(user.name) ||
-        isEmpty(user.password) || isValidPhoto(user.photo))
+        isEmpty(user.password) || isValidPhoto(user.photo) || !isValidPrivileges(user.privileges))
             throw new InvalidParamError('Invalid param');
         
         if (user.privileges && !currentUser.privileges)
