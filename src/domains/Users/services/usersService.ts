@@ -82,17 +82,14 @@ class usersService {
 
     async getUsers()
     {
-        try {
-            const users: Users[] | null = await prisma.users.findMany({
-                orderBy: { name: "asc" },
-            });
-    
-            return users;
+        const users: Users[] | null = await prisma.users.findMany({
+            orderBy: { name: "asc" },
+        });
 
-        } catch (error) {
-            throw error;
-        }
-        
+        if (!users)
+            throw new QueryError("Database empty");
+
+        return users;
     }
 
     async filterByPrivileges(privileges : boolean)
