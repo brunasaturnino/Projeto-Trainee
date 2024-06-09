@@ -121,12 +121,17 @@ class usersService {
         if (user.privileges && !currentUser.privileges)
             throw new NotAuthorizedError('Only administrators can update privileges');
 
-        await prisma.users.update({
+        const updatedUser : Users | null = await prisma.users.update({
             data : user,
             where: {
                 id: id
             }           
         })
+
+        if(!updatedUser)
+            throw new Error("Something happened");
+
+        return updatedUser;
     }
 
     async updateUserByEmail(email : string, user : Users, currentUser : Users | null)
@@ -140,12 +145,17 @@ class usersService {
             throw new NotAuthorizedError('Only administrators can update privileges');
 
 
-        await prisma.users.update({
+        const updatedUser : Users | null = await prisma.users.update({
             data: user,
             where: {
                 email: email
             }           
         })
+
+        if(!updatedUser)
+            throw new Error("Something happened");
+
+        return updatedUser;
         
     }
 
