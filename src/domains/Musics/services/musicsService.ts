@@ -85,7 +85,7 @@ class musicsService {
             where: { id: id }
         });
         
-        if(updatedMusic == null)
+        if(!updatedMusic)
             throw new Error("Something happened");
 
         return updatedMusic;
@@ -111,7 +111,7 @@ class musicsService {
             }           
         });
 
-        if(removedMusic == null)
+        if(!removedMusic)
             throw new Error("Something happened");
 
         return removedMusic;
@@ -139,7 +139,7 @@ class musicsService {
             orderBy: { name: "asc" },
         });
 
-        if (musics == null)
+        if (!musics)
             throw new QueryError("Database empty");
 
         return musics;
