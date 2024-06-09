@@ -1,17 +1,30 @@
-import { Musics } from "@prisma/client";
+import { Musics, Artists } from "@prisma/client";
 import prisma from "../../../../config/prismaClient";
+import { isEmpty } from "../../../../utils/auxiliary/auxiliaryFunctions";
+import { InvalidParamError } from "../../../../errors/errors/InvalidParamError";
+import { QueryError } from "../../../../errors/errors/QueryError";
 
 
 class musicsService {
 
-    async createMusica(musics: Musics) {
-        try {
-            await prisma.musics.create({
-                data: musics
-            });
-        } catch (error) {
-            throw error;
-        }
+    async createMusica(music: Musics) {
+        
+        if (isEmpty(music.name) || isEmpty(music.genre) || isEmpty(music.album) || isNaN(music.artistId))
+            throw new InvalidParamError('Invalid param');
+
+        const artistExist : Artists | null = await prisma.artists.findFirst({
+            where : {
+                id: music.id
+            }
+        })
+
+        if (!artistExist) 
+            throw new QueryError("There's no such an artist");
+
+        await prisma.musics.create({
+            data: music
+        });
+        
     }
 
     async getMusics() {
