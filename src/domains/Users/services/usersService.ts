@@ -352,9 +352,9 @@ class usersService {
         if (!userExist) 
             throw new QueryError("This user doesn't exist");
 
-        
         const encrypted = await this.encriptPassword(password);
-        await prisma.users.update({
+
+        const updatedUser : Users | null = await prisma.users.update({
             where: {
                 email: email
             },
@@ -363,6 +363,9 @@ class usersService {
                 password: encrypted
             }
         })
+
+        if(!updatedUser)
+            throw new Error("Something happened");
     }
 }
 
