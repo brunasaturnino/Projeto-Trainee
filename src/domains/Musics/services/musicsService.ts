@@ -7,7 +7,7 @@ import { QueryError } from "../../../../errors/errors/QueryError";
 
 class musicsService {
 
-    async createMusica(music: Musics) {
+    async createMusic(music: Musics) {
         
         if (isEmpty(music.name) || isEmpty(music.genre) || isEmpty(music.album) || isNaN(music.artistId))
             throw new InvalidParamError('Invalid param');

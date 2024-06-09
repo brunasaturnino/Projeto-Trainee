@@ -27,7 +27,7 @@ router.get("/musics/:id", verifyJWT, async (req: Request, res: Response, next: N
 router.post("/musics/create", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const music = req.body;
-        await musicService.createMusica(music);
+        await musicService.createMusic(music);
         res.status(201).send();
     } catch (error) {
         next(error);
