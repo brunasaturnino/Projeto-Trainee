@@ -151,15 +151,16 @@ class usersService {
 
     async removeUserById(id : number)
     {
-        try {
-            await prisma.users.delete({
-                where: {
-                    id: id
-                }           
-            })
-        } catch (error) {
-            throw error;
-        }
+        
+        if(isNaN(id))
+            throw new InvalidParamError('Invalid param');
+
+        await prisma.users.delete({
+            where: {
+                id: id
+            }           
+        })
+    
         
     }
 
