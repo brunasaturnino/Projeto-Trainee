@@ -330,7 +330,7 @@ class usersService {
             }
         })
         
-        if (user.musics == null)
+        if (!user.musics)
             throw new QueryError("User haven't listened any music yet");
 
         return user.musics;
