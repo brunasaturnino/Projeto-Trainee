@@ -13,16 +13,16 @@ class usersService {
         return encrypted;
     }
 
-    async createUser(user : Users, currentUser : Users | null)
+    async createUser(user : Users, currentUser : Users | null | undefined)
     {
     
         if (!isValidEmail(user.email) || isEmpty(user.name) ||
-        isEmpty(user.password) || isValidPhoto(user.photo) || !isValidPrivileges(user.privileges))
+        isEmpty(user.password) || !isValidPhoto(user.photo) || !isValidPrivileges(user.privileges))
             throw new InvalidParamError('Invalid param');
-        
-        if (user.privileges && !currentUser.privileges)
+    
+        if (user.privileges && !(currentUser?.privileges))
             throw new Error('Only administrators can create new administrators');
-        
+    
         const userExist : Users | null = await prisma.users.findFirst({
             where : {
                 email: user.email
@@ -123,7 +123,7 @@ class usersService {
         isEmpty(user.password) || isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || isNaN(id))
             throw new InvalidParamError('Invalid param');
 
-        if (user.privileges && !currentUser.privileges)
+        if (user.privileges && !(currentUser?.privileges))
             throw new NotAuthorizedError('Only administrators can update privileges');
 
         const userExist : Users | null = await prisma.users.findFirst({
@@ -155,7 +155,7 @@ class usersService {
         isEmpty(user.password) || isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || !isValidEmail(email))
             throw new InvalidParamError('Invalid param');
 
-        if (user.privileges && !currentUser.privileges)
+        if (user.privileges && !(currentUser?.privileges))
             throw new NotAuthorizedError('Only administrators can update privileges');
 
         const userExist : Users | null = await prisma.users.findFirst({

@@ -3,7 +3,9 @@ import usersService from "../services/usersService";
 import { ObjectEnumValue } from "@prisma/client/runtime/library";
 import { Users } from "@prisma/client";
 import { checkRole, login, logout,  notLoggedIn, verifyJWT } from "../../../middlewares/auth";
+import { stringtoBoolean } from "../../../../utils/auxiliary/auxiliaryFunctions"
 import { verify } from "jsonwebtoken";
+
 
 const router : Router = Router();
 const Service = new usersService();
@@ -15,8 +17,15 @@ router.post("/users/logout", verifyJWT, logout);
 router.post("/create", async (req: Request, res: Response, next: NextFunction) => {
     try {
         const currentUser = req.user;
-        const user : Users = req.body;
-        await Service.createUser(user, currentUser);
+        const user : Partial<Users> = {
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password,
+            photo: req.body.photo,
+            privileges: stringtoBoolean(req.body.privileges)
+        }
+
+        await Service.createUser(user as Users, currentUser);
         res.status(201).send();
     } catch (error) {
         next(error);
