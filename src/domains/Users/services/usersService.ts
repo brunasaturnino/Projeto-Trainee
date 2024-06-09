@@ -34,7 +34,7 @@ class usersService {
         
         const encrypted = await this.encriptPassword(user.password);
 
-        await prisma.users.create({
+        const newUser : Users | null = await prisma.users.create({
             data : {
                 name: user.name,
                 email: user.email,
@@ -43,7 +43,12 @@ class usersService {
                 photo : user.photo
 
             },
-        });    
+        });
+        
+        if(!newUser)
+            throw new Error("Something happened");
+
+        return newUser;
         
     }
 
