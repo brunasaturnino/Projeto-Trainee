@@ -58,12 +58,22 @@ class musicsService {
 
     async updateMusicById(id: number, music: Musics) {
         
-        if (isEmpty(music.name) || isEmpty(music.genre) || isEmpty(music.album) || isNaN(music.artistId) || isNaN(id))
+        if (isEmpty(music.name) || isEmpty(music.genre) ||
+        isEmpty(music.album) || isNaN(music.artistId) || isNaN(id))
             throw new InvalidParamError('Invalid param');
 
+        const musicExist: Musics | null = await prisma.musics.findFirst({
+            where: {
+                id: id
+            },
+        });
+
+        if(!musicExist)
+            throw new QueryError("There's no such a music");
+
         const artistExist : Artists | null = await prisma.artists.findFirst({
-            where : {
-                id: music.id
+            where: {
+                id: music.artistId
             }
         })
 
@@ -76,7 +86,7 @@ class musicsService {
         });
         
         if(updatedMusic == null)
-            throw new QueryError("There's no such a music");
+            throw new Error("Something happened");
 
         return updatedMusic;
     }
@@ -85,6 +95,15 @@ class musicsService {
 
         if (isNaN(id))
             throw new InvalidParamError('Invalid param');
+
+        const musicExist: Musics | null = await prisma.musics.findFirst({
+            where: {
+                id: id
+            },
+        });
+
+        if(!musicExist)
+            throw new QueryError("There's no such a music");
         
         const removedMusic: Musics | null = await prisma.musics.delete({
             where: {
@@ -93,7 +112,7 @@ class musicsService {
         });
 
         if(removedMusic == null)
-            throw new QueryError("There's no such a music");
+            throw new Error("Something happened");
 
         return removedMusic;
         
