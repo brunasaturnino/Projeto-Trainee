@@ -39,28 +39,43 @@ class musicsService {
     }
 
     async getMusicById(id: number) {
-        try {
-            const music: Musics | null = await prisma.musics.findUnique({
-                where: {
-                    id: id,
-                },
-            });
-            return music;
-        } catch (error) {
-            throw error;
-        }
+        
+        if (isNaN(id))
+            throw new InvalidParamError('Invalid param');
+
+        const music: Musics | null = await prisma.musics.findUnique({
+            where: {
+                id: id,
+            },
+        });
+
+        if(!music)
+            throw new QueryError("There's no such a music");
+
+        return music;
+    
     }
 
-    async updateMusicById(id: number, musica: Partial<Musics>) {
-        try {
-            const updatedMusic = await prisma.musics.update({
-                data: musica,
-                where: { id: id }
-            });
-            return updatedMusic;
-        } catch (error) {
-            throw error;
-        }
+    async updateMusicById(id: number, music: Musics) {
+        
+        if (isEmpty(music.name) || isEmpty(music.genre) || isEmpty(music.album) || isNaN(music.artistId) || isNaN(id))
+            throw new InvalidParamError('Invalid param');
+
+        const artistExist : Artists | null = await prisma.artists.findFirst({
+            where : {
+                id: music.id
+            }
+        })
+
+        if (!artistExist) 
+            throw new QueryError("There's no such an artist");
+
+        const updatedMusic = await prisma.musics.update({
+            data: music,
+            where: { id: id }
+        });
+        
+        return updatedMusic;
     }
 
     async removeMusicById(id : number) {
