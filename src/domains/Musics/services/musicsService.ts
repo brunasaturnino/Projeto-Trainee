@@ -100,12 +100,30 @@ class musicsService {
     }
 
     async getAllMusicsByArtistId(artistId: number) {
-        return await prisma.musics.findMany({
+
+        if (isNaN(artistId))
+            throw new InvalidParamError('Invalid param');
+
+        const artistExist : Artists | null = await prisma.artists.findFirst({
+            where : {
+                id: artistId
+            }
+        })
+
+        if (!artistExist) 
+            throw new QueryError("There's no such an artist");
+
+        const musics : Musics[] | null = await prisma.musics.findMany({
             where: {
                 artistId: artistId
             },
             orderBy: { name: "asc" },
         });
+
+        if (musics == null)
+            throw new QueryError("Database empty");
+
+        return musics;
     }
 }
 
