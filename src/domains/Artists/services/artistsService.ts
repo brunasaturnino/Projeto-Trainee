@@ -3,17 +3,23 @@ import prisma from "../../../../config/prismaClient";
 import {QueryError} from  "../../../../errors/errors/QueryError";    
 import {InvalidParamError} from  "../../../../errors/errors/InvalidParamError"; 
 import {InvalidRouteError} from  "../../../../errors/errors/InvalidRouteError"; 
-
+import { isValidPhoto, isEmpty } from "../../../../utils/auxiliary/auxiliaryFunctions"
 class artistsService {
-    async createArtist(body: Omit<Artists, 'id'>) {
-        try {
-            const newArtist: Artists | null = await prisma.artists.create({
-                data: body
-            });
-            return newArtist;
-        } catch (error) {
-            throw new QueryError("Failed to create artist");
-        }
+    async createArtist(artist: Artists) {
+        
+        if (isEmpty(artist.name) || !isValidPhoto(artist.photo) || isNaN(artist.streams)) 
+            throw new InvalidParamError('Invalid param');
+
+
+        const newArtist: Artists | null = await prisma.artists.create({
+            data: artist
+        });
+
+        if(!newArtist)
+            throw new Error("Something happened");
+        
+        return newArtist;
+
     }
 
     async getArtistById(id: number) {
@@ -33,13 +39,13 @@ class artistsService {
         }
     }
 
-    async updateArtistById(id: number, body: Partial<Artists>) {
+    async updateArtistById(id: number, artist: Partial<Artists>) {
         try {
             if (isNaN(id)) {
                 throw new InvalidParamError("Invalid artist ID");
             }
             const updatedArtist = await prisma.artists.update({
-                data: body,
+                data: artist,
                 where: { id }
             });
             return updatedArtist;
