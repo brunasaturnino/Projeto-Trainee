@@ -339,22 +339,30 @@ class usersService {
 
     async updateUserPasswordByEmail(email : string, password : string)
     {
-        try {
-            const encrypted = await this.encriptPassword(password);
-            await prisma.users.update({
-                where: {
-                    email: email
-                },
-    
-                data: {
-                    password: encrypted
-                }
-            })
-            
-        } catch (error) {
-            throw error;
-        }
+
+        if(!isValidEmail(email) || isEmpty(password))
+            throw new InvalidParamError('Invalid param');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                email: email
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+
         
+        const encrypted = await this.encriptPassword(password);
+        await prisma.users.update({
+            where: {
+                email: email
+            },
+
+            data: {
+                password: encrypted
+            }
+        })
     }
 }
 
