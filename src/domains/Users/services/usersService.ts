@@ -225,6 +225,27 @@ class usersService {
 
     async userListenedMusic(idUser : number, idMusic : number)
     {
+
+        if(isNaN(idUser) || isNaN(idMusic))
+            throw new InvalidParamError('Invalid param');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                id: idUser
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+
+        const musicExist : Musics | null = await prisma.musics.findFirst({
+            where : {
+                id: idMusic
+            }
+        })
+
+        if (!musicExist) 
+            throw new QueryError("This music doesn't exist");
         
         await prisma.users.update({
             where: {
