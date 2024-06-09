@@ -57,7 +57,9 @@ class artistsService {
         
         const updatedArtist = await prisma.artists.update({
             data: artist,
-            where: { id }
+            where: { 
+                id: id 
+            }
         });
 
         if(!updatedArtist)
@@ -68,17 +70,30 @@ class artistsService {
     }
 
     async removeArtistById(id: number) {
-        try {
-            if (isNaN(id)) {
-                throw new InvalidParamError("Invalid artist ID");
-            }
+        
+            if (isNaN(id))
+                throw new InvalidParamError('Invalid param');
+            
+            const artistExist : Artists | null = await prisma.artists.findFirst({
+                where : {
+                    id: id
+                }
+            })
+
+            if (!artistExist) 
+                throw new QueryError("This artist doesn't exist");
+
             const deletedArtist: Artists | null = await prisma.artists.delete({
-                where: { id }
+                where: { 
+                    id: id
+                }
             });
+
+            if(!deletedArtist)
+                throw new Error("Something happened");
+
             return deletedArtist;
-        } catch (error) {
-            throw new QueryError("Failed to delete artist");
-        }
+        
     }
 
     async getAllArtists() {
