@@ -75,20 +75,28 @@ class musicsService {
             where: { id: id }
         });
         
+        if(updatedMusic == null)
+            throw new QueryError("There's no such a music");
+
         return updatedMusic;
     }
 
     async removeMusicById(id : number) {
-        try {
-            const music: Musics | null = await prisma.musics.delete({
-                where: {
-                    id: id
-                }           
-            });
-            return music;
-        } catch (error) {
-            throw error;
-        }
+
+        if (isNaN(id))
+            throw new InvalidParamError('Invalid param');
+        
+        const removedMusic: Musics | null = await prisma.musics.delete({
+            where: {
+                id: id
+            }           
+        });
+
+        if(removedMusic == null)
+            throw new QueryError("There's no such a music");
+
+        return removedMusic;
+        
     }
 
     async getAllMusicsByArtistId(artistId: number) {
