@@ -306,7 +306,7 @@ class usersService {
         
     }
 
-    async getAllMusicasListenedByUser(idUser : number) {
+    async getAllMusicsListenedByUser(idUser : number) {
 
         if(isNaN(idUser))
             throw new InvalidParamError('Invalid param');
