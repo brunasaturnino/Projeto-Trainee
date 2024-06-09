@@ -291,7 +291,7 @@ class usersService {
             throw new QueryError("User haven't listened this music");
         }
     
-        await prisma.users.update({
+        const user : Users | null = await prisma.users.update({
             where: {
                 id: idUser
             },
@@ -303,6 +303,11 @@ class usersService {
                 },
             }
         });
+
+        if(!user)
+            throw new Error("Something happened");
+
+        return removedUser;
         
     }
 
@@ -366,6 +371,8 @@ class usersService {
 
         if(!updatedUser)
             throw new Error("Something happened");
+
+        return updatedUser;
     }
 }
 
