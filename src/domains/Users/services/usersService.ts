@@ -306,22 +306,34 @@ class usersService {
         
     }
 
-    async getAllMusicasListenedByUser(idUser : number){
-        try {
-            const user = await prisma.users.findFirst({
-                where: {
-                    id: idUser
-                },
-    
-                include: {
-                    musics: true
-                }
-            })
-            
-            return user.musics;
-        } catch (error) {
-            throw error;
-        }
+    async getAllMusicasListenedByUser(idUser : number) {
+
+        if(isNaN(idUser))
+            throw new InvalidParamError('Invalid param');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                id: idUser
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+        
+        const user = await prisma.users.findFirst({
+            where: {
+                id: idUser
+            },
+
+            include: {
+                musics: true
+            }
+        })
+        
+        if (user.musics == null)
+            throw new QueryError("User haven't listened any music yet");
+
+        return user.musics;
     }
    
 
