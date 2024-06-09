@@ -1,4 +1,4 @@
-import { Users } from "@prisma/client";
+import { Users, Musics } from "@prisma/client";
 import prisma from "../../../../config/prismaClient";
 import bcrypt from "bcrypt";
 import { QueryError } from "../../../../errors/errors/QueryError";
@@ -181,26 +181,45 @@ class usersService {
 
     async haveUserListenedMusic(idUser : number, idMusic : number)
     {
-        try {
-            const user : Users | null = await prisma.users.findFirst({
-                where: {
-                    id: idUser
-                },
-    
-                include: {
-                    musics: {
-                        where: {
-                            id: idMusic
-                        }
-    
+        if(isNaN(idUser) || isNaN(idMusic))
+            throw new InvalidParamError('Invalid param');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                id: idUser
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+
+        const musicExist : Musics | null = await prisma.musics.findFirst({
+            where : {
+                id: idMusic
+            }
+        })
+
+        if (!musicExist) 
+            throw new QueryError("This music doesn't exist");
+
+
+        const user : Users | null = await prisma.users.findFirst({
+            where: {
+                id: idUser
+            },
+
+            include: {
+                musics: {
+                    where: {
+                        id: idMusic
                     }
+
                 }
-            })
-            
-            return (user != null);
-        } catch (error) {
-            throw error;
-        }
+            }
+        })
+        
+        return (user != null);
+        
         
     }
 
