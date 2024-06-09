@@ -86,7 +86,7 @@ class usersService {
         return user;
     }
 
-    async getUsers()
+    async getAllUsers()
     {
         const users: Users[] | null = await prisma.users.findMany({
             orderBy: { name: "asc" },
@@ -126,6 +126,15 @@ class usersService {
         if (user.privileges && !currentUser.privileges)
             throw new NotAuthorizedError('Only administrators can update privileges');
 
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                id: id
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+
         const updatedUser : Users | null = await prisma.users.update({
             data : user,
             where: {
@@ -149,6 +158,15 @@ class usersService {
         if (user.privileges && !currentUser.privileges)
             throw new NotAuthorizedError('Only administrators can update privileges');
 
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                email: email
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+
 
         const updatedUser : Users | null = await prisma.users.update({
             data: user,
@@ -170,6 +188,15 @@ class usersService {
         if(isNaN(id))
             throw new InvalidParamError('Invalid param');
 
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                id: id
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+
         const removedUser : Users | null = await prisma.users.delete({
             where: {
                 id: id
@@ -187,6 +214,15 @@ class usersService {
 
         if(!isValidEmail(email))
             throw new InvalidParamError('Invalid param');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                email: email
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
         
         const removedUser : Users | null = await prisma.users.delete({
             where: {

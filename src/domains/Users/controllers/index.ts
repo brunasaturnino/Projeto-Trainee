@@ -96,7 +96,7 @@ router.get("/account/musics", verifyJWT, async (req : Request, res : Response, n
 router.get('/', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
-        const users : Users[] = await Service.getUsers(); 
+        const users : Users[] = await Service.getAllUsers(); 
         res.status(200).json(users);
 
     } catch (error) {
