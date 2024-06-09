@@ -307,7 +307,7 @@ class usersService {
         if(!user)
             throw new Error("Something happened");
 
-        return removedUser;
+        return user;
         
     }
 
