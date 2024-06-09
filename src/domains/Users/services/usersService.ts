@@ -225,25 +225,21 @@ class usersService {
 
     async userListenedMusic(idUser : number, idMusic : number)
     {
-        try {
-            await prisma.users.update({
-                where: {
-                    id: idUser
-                },
-    
-                data: {
-                    musics: {
-                        connect: {
-                            id: idMusic,
-                        },
-                    },
-                }
-            })
-            
-        } catch (error) {
-            throw error;
-        }
         
+        await prisma.users.update({
+            where: {
+                id: idUser
+            },
+
+            data: {
+                musics: {
+                    connect: {
+                        id: idMusic,
+                    },
+                },
+            }
+        })
+           
     }
 
     async removeUserListenedMusic(idUser: number, idMusic: number) {
