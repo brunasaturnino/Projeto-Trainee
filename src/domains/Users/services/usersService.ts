@@ -166,15 +166,16 @@ class usersService {
 
     async removeUserByEmail(email : string)
     {
-        try {
-            await prisma.users.delete({
-                where: {
-                    email: email
-                }           
-            })
-        } catch (error) {
-            throw error;
-        }
+
+        if(!isValidEmail(email))
+            throw new InvalidParamError('Invalid param');
+        
+        await prisma.users.delete({
+            where: {
+                email: email
+            }           
+        })
+
 
     }
 
