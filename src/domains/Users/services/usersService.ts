@@ -155,13 +155,16 @@ class usersService {
         if(isNaN(id))
             throw new InvalidParamError('Invalid param');
 
-        await prisma.users.delete({
+        const removedUser : Users | null = await prisma.users.delete({
             where: {
                 id: id
             }           
         })
     
-        
+        if(!removedUser)
+            throw new Error("Something happened");
+
+        return removedUser;
     }
 
     async removeUserByEmail(email : string)
@@ -170,11 +173,16 @@ class usersService {
         if(!isValidEmail(email))
             throw new InvalidParamError('Invalid param');
         
-        await prisma.users.delete({
+        const removedUser : Users | null = await prisma.users.delete({
             where: {
                 email: email
             }           
         })
+
+        if(!removedUser)
+            throw new Error("Something happened");
+
+        return removedUser;
 
 
     }
