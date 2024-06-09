@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { QueryError } from "../../../../errors/errors/QueryError";
 import { isValidEmail, isValidPhoto, isValidPrivileges,isEmpty } from "../../../../utils/auxiliary/auxiliaryFunctions"
 import { InvalidParamError } from "../../../../errors/errors/InvalidParamError";
+import { NotAuthorizedError } from "../../../../errors/errors/NotAuthorizedError";
 
 class usersService {
     async encriptPassword(password : string){
@@ -110,41 +111,49 @@ class usersService {
         return users;    
     }
 
-    async updateUserById(id : number, user : Users)
+    async updateUserById(id : number, user : Users, currentUser : Users | null)
     {
-        try {
-            await prisma.users.update({
-                data : {
-                    name: user.name,
-                    email: user.email,
-                    password : user.password,
-                    privileges : Boolean(user.privileges),
-                    photo : user.photo
-
-                },
-                
-                where: {
-                    id: id
-                }           
-            })
-        } catch (error) {
-            throw error;
-        }
         
+        if (!isValidEmail(user.email) || isEmpty(user.name) ||
+        isEmpty(user.password) || isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || isNaN(id))
+            throw new InvalidParamError('Invalid param');
+
+        if (user.privileges && !currentUser.privileges)
+            throw new NotAuthorizedError('Only administrators can update privileges');
+
+        await prisma.users.update({
+            data : {
+                name: user.name,
+                email: user.email,
+                password : user.password,
+                privileges : Boolean(user.privileges),
+                photo : user.photo
+
+            },
+            
+            where: {
+                id: id
+            }           
+        })
     }
 
-    async updateUserByEmail(email : string, user : Users)
+    async updateUserByEmail(email : string, user : Users, currentUser : Users | null)
     {
-        try {
-            await prisma.users.update({
-                data: user,
-                where: {
-                    email: email
-                }           
-            })
-        } catch (error) {
-            throw error;
-        }
+
+        if (!isValidEmail(user.email) || isEmpty(user.name) ||
+        isEmpty(user.password) || isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || !isValidEmail(email))
+            throw new InvalidParamError('Invalid param');
+
+        if (user.privileges && !currentUser.privileges)
+            throw new NotAuthorizedError('Only administrators can update privileges');
+
+
+        await prisma.users.update({
+            data: user,
+            where: {
+                email: email
+            }           
+        })
         
     }
 

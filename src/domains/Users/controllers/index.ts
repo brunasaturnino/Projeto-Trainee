@@ -12,7 +12,7 @@ router.post("/users/login", notLoggedIn, login);
 
 router.post("/users/logout", verifyJWT, logout);
 
-router.post("/users/create", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/create", async (req: Request, res: Response, next: NextFunction) => {
     try {
         const currentUser = req.user;
         const user : Users = req.body;
@@ -23,7 +23,7 @@ router.post("/users/create", async (req: Request, res: Response, next: NextFunct
     }
 });
 
-router.get("/users/account", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/account", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try{
         const user : Users = await Service.getUserByEmail(req.user.email);
         res.status(200).json(user);
@@ -32,17 +32,18 @@ router.get("/users/account", verifyJWT, async (req: Request, res: Response, next
     }
 });
 
-router.put("/users/account/update", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/account/update", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
    try{
+        const currentUser = req.user;
         const user : Users = req.body;
-        await Service.updateUserByEmail(req.user.email, user);
+        await Service.updateUserByEmail(currentUser.email, user, currentUser);
         res.status(202).send("Usuário atualizado com sucesso!");
    }catch(error){
         next(error);
    } 
 });
 
-router.put("/users/account/password", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/account/password", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try{
         const { password } = req.body;
         await Service.updateUserPasswordByEmail(req.user.email, password);
@@ -52,7 +53,7 @@ router.put("/users/account/password", verifyJWT, async (req: Request, res: Respo
     }
 });
 
-router.delete("/users/account/delete", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/account/delete", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try{
         await Service.removeUserByEmail(req.user.email);
         res.status(202).send("Usuário deletado com sucesso!");
@@ -61,7 +62,7 @@ router.delete("/users/account/delete", verifyJWT, async (req: Request, res: Resp
     }
 });
 
-router.post("users/account/listen/:id", verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
+router.post("/account/listen/:id", verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
     try{
         const { id } = req.params;
         await Service.userListenedMusic(req.user.id, Number(id));
@@ -72,7 +73,7 @@ router.post("users/account/listen/:id", verifyJWT, async (req : Request, res : R
     
 });
 
-router.delete("users/account/unlisten/:id", verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
+router.delete("/account/unlisten/:id", verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
     try{
         const { id } = req.params;
         await Service.removeUserListenedMusic(req.user.id, Number(id));
@@ -83,7 +84,7 @@ router.delete("users/account/unlisten/:id", verifyJWT, async (req : Request, res
     
 });
 
-router.get("users/account/musics", verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
+router.get("/account/musics", verifyJWT, async (req : Request, res : Response, next : NextFunction) => {
     try{
         const musics = await Service.getAllMusicasListenedByUser(req.user.id);
         res.status(200).json(musics);
@@ -92,7 +93,7 @@ router.get("users/account/musics", verifyJWT, async (req : Request, res : Respon
     }
 });
     
-router.get('/users', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
+router.get('/', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
         const users : Users[] = await Service.getUsers(); 
@@ -104,7 +105,7 @@ router.get('/users', verifyJWT, checkRole, async (req : Request, res : Response,
     
 })
 
-router.post("users/admin/create", verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
+router.post("/admin/create", verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
     try{
         const user : Users = req.body;
         await Service.createUser(user, req.user);
@@ -127,7 +128,7 @@ router.get('/privilege/:privilege', verifyJWT, async (req : Request, res : Respo
     
 })
 
-router.get('/users/:id', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
+router.get('/id/:id', verifyJWT, checkRole, async (req : Request, res : Response, next : NextFunction) => {
     
     try {
         const { id } = req.params;
@@ -167,22 +168,24 @@ router.get('/email/:email', verifyJWT, checkRole, async (req : Request, res : Re
 })
 
 
-router.put("/users/update/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/update/id/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
+        const currentUser = req.user;
         const user : Users = req.body;
-        await Service.updateUserById(Number(id), user);
+        await Service.updateUserById(Number(id), user, currentUser);
         res.status(202).send();
     } catch (error) {
         next(error);
     }
 });
 
-router.put("/email/:email", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/update/email/:email", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email } = req.params;
+        const currentUser = req.user;
         const user : Users = req.body;
-        await Service.updateUserByEmail(email, user);
+        await Service.updateUserByEmail(email, user, currentUser);
         res.status(202).send();
     } catch (error) {
         next(error);
@@ -192,7 +195,7 @@ router.put("/email/:email", verifyJWT, checkRole, async (req: Request, res: Resp
 
 
 
-router.delete("/users/delete/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/delete/id/:id", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         await Service.removeUserById(Number(id));
@@ -203,7 +206,7 @@ router.delete("/users/delete/:id", verifyJWT, checkRole, async (req: Request, re
 });
 
 
-router.delete("/email/:email", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/delete/email/:email", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email } = req.params;
         await Service.removeUserByEmail(email);
