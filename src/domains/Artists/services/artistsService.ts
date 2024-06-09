@@ -39,19 +39,32 @@ class artistsService {
         
     }
 
-    async updateArtistById(id: number, artist: Partial<Artists>) {
-        try {
-            if (isNaN(id)) {
-                throw new InvalidParamError("Invalid artist ID");
+    async updateArtistById(id: number, artist: Artists) {
+    
+        if (isEmpty(artist.name) || isValidPhoto(artist.photo) ||
+        isNaN(artist.streams) || isNaN(id)) 
+            throw new InvalidParamError('Invalid param');
+
+        
+        const artistExist : Artists | null = await prisma.artists.findFirst({
+            where : {
+                id: id
             }
-            const updatedArtist = await prisma.artists.update({
-                data: artist,
-                where: { id }
-            });
-            return updatedArtist;
-        } catch (error) {
-            throw new QueryError("Failed to update artist");
-        }
+        })
+
+        if (!artistExist) 
+            throw new QueryError("This artist doesn't exist");
+        
+        const updatedArtist = await prisma.artists.update({
+            data: artist,
+            where: { id }
+        });
+
+        if(!updatedArtist)
+            throw new Error("Something happened");
+        
+        return updatedArtist;
+        
     }
 
     async removeArtistById(id: number) {
