@@ -97,14 +97,18 @@ class artistsService {
     }
 
     async getAllArtists() {
-        try {
-            const artists: Artists[] = await prisma.artists.findMany({
-                orderBy: { name: 'asc' }
-            });
-            return artists;
-        } catch (error) {
-            throw new QueryError("Failed to retrieve artists");
-        }
+        
+        const artists: Artists[] = await prisma.artists.findMany({
+            orderBy: {
+                name: 'asc'
+            }
+        });
+
+        if (!artists)
+            throw new QueryError("Database empty");
+
+        return artists;
+    
     }
 }
 
