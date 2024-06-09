@@ -28,11 +28,15 @@ class musicsService {
     }
 
     async getMusics() {
-        return await prisma.musics.findMany({
-          orderBy: { name: "asc" },
-          include: { artist: true, user: true },
+        const musics : Musics[] | null = await prisma.musics.findMany({
+            orderBy: { name: "asc" }
         });
-      }
+
+        if(!musics)
+            throw new QueryError("Database empty");
+
+        return musics;
+    }
 
     async getMusicById(id: number) {
         try {
