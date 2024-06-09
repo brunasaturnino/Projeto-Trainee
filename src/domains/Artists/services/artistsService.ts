@@ -23,20 +23,20 @@ class artistsService {
     }
 
     async getArtistById(id: number) {
-        try {
+        
             if (isNaN(id)) {
-                throw new InvalidParamError("Invalid artist ID");
+                throw new InvalidParamError('Invalid param');
             }
+
             const artist: Artists | null = await prisma.artists.findUnique({
                 where: { id },
             });
-            if (!artist) {
-                throw new InvalidRouteError("Artist not found");
-            }
+            
+            if (!artist) 
+                throw new QueryError("This account doesn't exist");
+            
             return artist;
-        } catch (error) {
-            throw new QueryError("Failed to retrieve artist");
-        }
+        
     }
 
     async updateArtistById(id: number, artist: Partial<Artists>) {
