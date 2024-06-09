@@ -122,15 +122,7 @@ class usersService {
             throw new NotAuthorizedError('Only administrators can update privileges');
 
         await prisma.users.update({
-            data : {
-                name: user.name,
-                email: user.email,
-                password : user.password,
-                privileges : Boolean(user.privileges),
-                photo : user.photo
-
-            },
-            
+            data : user,
             where: {
                 id: id
             }           
