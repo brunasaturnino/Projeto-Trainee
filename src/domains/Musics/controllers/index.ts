@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import musicsService from "../services/musicsService";
 import { checkRole, verifyJWT } from "../../../middlewares/auth";
+import statusCodes from "../../../../utils/constants/statusCode";
 
 const router : Router = Router();
 const musicService = new musicsService();
@@ -8,7 +9,7 @@ const musicService = new musicsService();
 router.get("/musics", verifyJWT, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const musics = await musicService.getMusics();
-        res.json(musics);
+        res.status(statusCodes.ACCEPTED).json(musics);
     } catch (error) {
         next(error);
     }
@@ -18,7 +19,7 @@ router.get("/musics/:id", verifyJWT, async (req: Request, res: Response, next: N
     try {
         const { id } = req.params;
         const music = await musicService.getMusicById(Number(id));
-        res.json(music);
+        res.status(statusCodes.ACCEPTED).json(music);
     } catch (error) {
         next(error);
     }
@@ -27,8 +28,8 @@ router.get("/musics/:id", verifyJWT, async (req: Request, res: Response, next: N
 router.post("/musics/create", verifyJWT, checkRole, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const music = req.body;
-        await musicService.createMusica(music);
-        res.status(201).send();
+        await musicService.createMusic(music);
+        res.status(statusCodes.CREATED).send();
     } catch (error) {
         next(error);
     }
@@ -39,7 +40,7 @@ router.put("/musics/update/:id", verifyJWT, checkRole, async (req: Request, res:
         const { id } = req.params;
         const music = req.body;
         await musicService.updateMusicById(Number(id), music);
-        res.status(204).send();
+        res.status(statusCodes.NO_CONTENT).send();
     } catch (error) {
         next(error);
     }
@@ -49,7 +50,7 @@ router.delete("/musiscs/delete/:id", verifyJWT, checkRole, async (req: Request, 
     try {
         const { id } = req.params;
         await musicService.removeMusicById(Number(id));
-        res.status(204).send();
+        res.status(statusCodes.NO_CONTENT).send();
     } catch (error) {
         next(error);
     }
@@ -59,7 +60,7 @@ router.get("/musics/artist/:id", verifyJWT, async (req: Request, res: Response, 
     try{
         const { id } = req.params;
         const musics = await musicService.getAllMusicsByArtistId(Number(id));
-        res.json(musics);
+        res.status(statusCodes.ACCEPTED).json(musics);
     }catch(error){
         next(error);
     }

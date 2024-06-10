@@ -1,6 +1,10 @@
-import { Users } from "@prisma/client";
+import { Users, Musics } from "@prisma/client";
 import prisma from "../../../../config/prismaClient";
 import bcrypt from "bcrypt";
+import { QueryError } from "../../../../errors/errors/QueryError";
+import { isValidEmail, isValidPhoto, isValidPrivileges,isEmpty } from "../../../../utils/auxiliary/auxiliaryFunctions"
+import { InvalidParamError } from "../../../../errors/errors/InvalidParamError";
+import { NotAuthorizedError } from "../../../../errors/errors/NotAuthorizedError";
 
 class usersService {
     async encriptPassword(password : string){
@@ -8,267 +12,431 @@ class usersService {
         const encrypted = await bcrypt.hashSync(password, saltRounds);
         return encrypted;
     }
-    async createUser(user : Users, currentUser)
+
+    async createUser(user : Users, currentUser : Users | null | undefined)
     {
-        try {
-            if (user.privileges && !currentUser.privileges) {
-                throw new Error('Somente administradores podem criar outros administradores');
+    
+        if (!isValidEmail(user.email) || isEmpty(user.name) ||
+        isEmpty(user.password) || !isValidPhoto(user.photo) || !isValidPrivileges(user.privileges))
+            throw new InvalidParamError('Invalid param');
+    
+        if (user.privileges && !(currentUser?.privileges))
+            throw new Error('Only administrators can create new administrators');
+    
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                email: user.email
             }
-            const encrypted = await this.encriptPassword(user.password);
-            await prisma.users.create({
-                data : {
-                    name: user.name,
-                    email: user.email,
-                    password : encrypted,
-                    privileges : Boolean(user.privileges),
-                    photo : user.photo
+        })
 
-                },
-            });    
+        if (userExist) 
+            throw new QueryError("This email is already registered");
+        
+        const encrypted = await this.encriptPassword(user.password);
 
-        } catch (error) {
-            throw error;
-        }
+        const newUser : Users | null = await prisma.users.create({
+            data : {
+                name: user.name,
+                email: user.email,
+                password : encrypted,
+                privileges : Boolean(user.privileges),
+                photo : user.photo
+
+            },
+        });
+        
+        if(!newUser)
+            throw new Error("Something happened");
+
+        return newUser;
         
     }
 
     async getUserById(id : number)
     {
-        try {
-            const user : Users | null = await prisma.users.findFirst({
-                where : {
-                    id: id
-                }
-            });    
-
-            return user;
-
-        } catch (error) {
-            throw error;
-        }
+        if(isNaN(id))
+            throw new InvalidParamError('Invalid param');
+            
+        const user : Users | null = await prisma.users.findFirst({
+            where : {
+                id: id
+            }
+        }); 
         
+        if (!user)
+            throw new QueryError("This account doesn't exist");
+            
+        return user;
     }
 
     async getUserByEmail(email : string)
     {
-        try {
-            const user : Users | null = await prisma.users.findFirst({
-                where : {
-                    email: email
-                }
-            });
-    
-            return user;
+        if(!isValidEmail(email))
+            throw new InvalidParamError('Invalid param');
 
-        } catch (error) {
-            throw error;
-        }
-        
+        const user : Users | null = await prisma.users.findFirst({
+            where : {
+                email: email
+            }
+        });
+
+        if (!user)
+            throw new QueryError("This account doesn't exist");
+
+        return user;
     }
 
-    async getUsers()
+    async getAllUsers()
     {
-        try {
-            const users: Users[] | null = await prisma.users.findMany({
-                orderBy: { name: "asc" },
-            });
-    
-            return users;
+        const users: Users[] | null = await prisma.users.findMany({
+            orderBy: { name: "asc" },
+        });
 
-        } catch (error) {
-            throw error;
-        }
-        
+        if (!users)
+            throw new QueryError("Database empty");
+
+        return users;
     }
 
     async filterByPrivileges(privileges : boolean)
     {
+        if(!isValidPrivileges(privileges))
+            throw new InvalidParamError('Invalid param');
 
-        try {
-            const users : Users[] | null = await prisma.users.findMany({
-                where: {
-                    privileges: privileges
-                }
-            });
     
-            return users;
+        const users : Users[] | null = await prisma.users.findMany({
+            where: {
+                privileges: privileges
+            }
+        });
 
-        } catch (error) {
-            throw error;
-        }
-        
+        if (!users)
+            throw new QueryError("Database empty");
+
+        return users;    
     }
 
-    async updateUserById(id : number, user : Users)
+    async updateUserById(id : number, user : Users, currentUser : Users | null)
     {
-        try {
-            await prisma.users.update({
-                data : {
-                    name: user.name,
-                    email: user.email,
-                    password : user.password,
-                    privileges : Boolean(user.privileges),
-                    photo : user.photo
-
-                },
-                
-                where: {
-                    id: id
-                }           
-            })
-        } catch (error) {
-            throw error;
-        }
         
+        if (!isValidEmail(user.email) || isEmpty(user.name) ||
+        isEmpty(user.password) || isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || isNaN(id))
+            throw new InvalidParamError('Invalid param');
+
+        if (user.privileges && !(currentUser?.privileges))
+            throw new NotAuthorizedError('Only administrators can update privileges');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                id: id
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+
+        const updatedUser : Users | null = await prisma.users.update({
+            data : user,
+            where: {
+                id: id
+            }           
+        })
+
+        if(!updatedUser)
+            throw new Error("Something happened");
+
+        return updatedUser;
     }
 
-    async updateUserByEmail(email : string, user : Users)
+    async updateUserByEmail(email : string, user : Users, currentUser : Users | null)
     {
-        try {
-            await prisma.users.update({
-                data: user,
-                where: {
-                    email: email
-                }           
-            })
-        } catch (error) {
-            throw error;
-        }
+
+        if (!isValidEmail(user.email) || isEmpty(user.name) ||
+        isEmpty(user.password) || isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || !isValidEmail(email))
+            throw new InvalidParamError('Invalid param');
+
+        if (user.privileges && !(currentUser?.privileges))
+            throw new NotAuthorizedError('Only administrators can update privileges');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                email: email
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+
+
+        const updatedUser : Users | null = await prisma.users.update({
+            data: user,
+            where: {
+                email: email
+            }           
+        })
+
+        if(!updatedUser)
+            throw new Error("Something happened");
+
+        return updatedUser;
         
     }
 
     async removeUserById(id : number)
     {
-        try {
-            await prisma.users.delete({
-                where: {
-                    id: id
-                }           
-            })
-        } catch (error) {
-            throw error;
-        }
         
+        if(isNaN(id))
+            throw new InvalidParamError('Invalid param');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                id: id
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+
+        const removedUser : Users | null = await prisma.users.delete({
+            where: {
+                id: id
+            }           
+        })
+    
+        if(!removedUser)
+            throw new Error("Something happened");
+
+        return removedUser;
     }
 
     async removeUserByEmail(email : string)
     {
-        try {
-            await prisma.users.delete({
-                where: {
-                    email: email
-                }           
-            })
-        } catch (error) {
-            throw error;
-        }
+
+        if(!isValidEmail(email))
+            throw new InvalidParamError('Invalid param');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                email: email
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+        
+        const removedUser : Users | null = await prisma.users.delete({
+            where: {
+                email: email
+            }           
+        })
+
+        if(!removedUser)
+            throw new Error("Something happened");
+
+        return removedUser;
+
 
     }
 
     async haveUserListenedMusic(idUser : number, idMusic : number)
     {
-        try {
-            const user : Users | null = await prisma.users.findFirst({
-                where: {
-                    id: idUser
-                },
-    
-                include: {
-                    musics: {
-                        where: {
-                            id: idMusic
-                        }
-    
+        if(isNaN(idUser) || isNaN(idMusic))
+            throw new InvalidParamError('Invalid param');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                id: idUser
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+
+        const musicExist : Musics | null = await prisma.musics.findFirst({
+            where : {
+                id: idMusic
+            }
+        })
+
+        if (!musicExist) 
+            throw new QueryError("This music doesn't exist");
+
+
+        const user : Users | null = await prisma.users.findFirst({
+            where: {
+                id: idUser
+            },
+
+            include: {
+                musics: {
+                    where: {
+                        id: idMusic
                     }
+
                 }
-            })
-            
-            return (user != null);
-        } catch (error) {
-            throw error;
-        }
+            }
+        })
+        
+        return (user != null);
+        
         
     }
 
     async userListenedMusic(idUser : number, idMusic : number)
     {
-        try {
-            await prisma.users.update({
-                where: {
-                    id: idUser
-                },
-    
-                data: {
-                    musics: {
-                        connect: {
-                            id: idMusic,
-                        },
-                    },
-                }
-            })
-            
-        } catch (error) {
-            throw error;
-        }
+
+        if(isNaN(idUser) || isNaN(idMusic))
+            throw new InvalidParamError('Invalid param');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                id: idUser
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+
+        const musicExist : Musics | null = await prisma.musics.findFirst({
+            where : {
+                id: idMusic
+            }
+        })
+
+        if (!musicExist) 
+            throw new QueryError("This music doesn't exist");
         
+        const user : Users | null = await prisma.users.update({
+            where: {
+                id: idUser
+            },
+
+            data: {
+                musics: {
+                    connect: {
+                        id: idMusic,
+                    },
+                },
+            }
+        })
+
+        if(!user)
+            throw new Error("Something happened");
+
+        return user;
+           
     }
 
     async removeUserListenedMusic(idUser: number, idMusic: number) {
-        try {
-            await prisma.users.update({
-                where: {
-                    id: idUser
-                },
-                data: {
-                    musics: {
-                        disconnect: {
-                            id: idMusic,
-                        },
-                    },
-                }
-            });
-        } catch (error) {
-            throw error;
+
+        if(isNaN(idUser) || isNaN(idMusic))
+            throw new InvalidParamError('Invalid param');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                id: idUser
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+
+        const musicExist : Musics | null = await prisma.musics.findFirst({
+            where : {
+                id: idMusic
+            }
+        })
+
+        if (!musicExist) 
+            throw new QueryError("This music doesn't exist");
+
+        if(await this.haveUserListenedMusic(idUser, idMusic) == false)
+        {
+            throw new QueryError("User haven't listened this music");
         }
+    
+        const user : Users | null = await prisma.users.update({
+            where: {
+                id: idUser
+            },
+            data: {
+                musics: {
+                    disconnect: {
+                        id: idMusic,
+                    },
+                },
+            }
+        });
+
+        if(!user)
+            throw new Error("Something happened");
+
+        return user;
+        
     }
 
-    async getAllMusicasListenedByUser(idUser : number){
-        try {
-            const user = await prisma.users.findFirst({
-                where: {
-                    id: idUser
-                },
-    
-                include: {
-                    musics: true
-                }
-            })
-            
-            return user.musics;
-        } catch (error) {
-            throw error;
-        }
+    async getAllMusicsListenedByUser(idUser : number) {
+
+        if(isNaN(idUser))
+            throw new InvalidParamError('Invalid param');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                id: idUser
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+        
+        const user = await prisma.users.findFirst({
+            where: {
+                id: idUser
+            },
+
+            include: {
+                musics: true
+            }
+        })
+        
+        if (!user.musics)
+            throw new QueryError("User haven't listened any music yet");
+
+        return user.musics;
     }
    
 
     async updateUserPasswordByEmail(email : string, password : string)
     {
-        try {
-            const encrypted = await this.encriptPassword(password);
-            await prisma.users.update({
-                where: {
-                    email: email
-                },
-    
-                data: {
-                    password: encrypted
-                }
-            })
-            
-        } catch (error) {
-            throw error;
-        }
-        
+
+        if(!isValidEmail(email) || isEmpty(password))
+            throw new InvalidParamError('Invalid param');
+
+        const userExist : Users | null = await prisma.users.findFirst({
+            where : {
+                email: email
+            }
+        })
+
+        if (!userExist) 
+            throw new QueryError("This user doesn't exist");
+
+        const encrypted = await this.encriptPassword(password);
+
+        const updatedUser : Users | null = await prisma.users.update({
+            where: {
+                email: email
+            },
+
+            data: {
+                password: encrypted
+            }
+        })
+
+        if(!updatedUser)
+            throw new Error("Something happened");
+
+        return updatedUser;
     }
 }
 
