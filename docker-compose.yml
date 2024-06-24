@@ -35,10 +35,15 @@ services:
       - "${PORT}:${PORT}"  
     networks:
       - base_network
-    command: npm start
 
     depends_on: 
       - mysql
+      
+    command: npm start
+    command: npx prisma migrate dev --name init
+    command: npx prisma generate
+
+    
 
 networks:
   base_network:
