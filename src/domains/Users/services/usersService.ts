@@ -2,7 +2,7 @@ import { Users, Musics } from "@prisma/client";
 import prisma from "../../../../config/prismaClient";
 import bcrypt from "bcrypt";
 import { QueryError } from "../../../../errors/errors/QueryError";
-import { isValidEmail, isValidPhoto, isValidPrivileges,isEmpty } from "../../../../utils/auxiliary/auxiliaryFunctions"
+import { isValidEmail, isValidPhoto, isValidPrivileges, isEmpty, isValidId } from "../../../../utils/auxiliary/auxiliaryFunctions"
 import { InvalidParamError } from "../../../../errors/errors/InvalidParamError";
 import { NotAuthorizedError } from "../../../../errors/errors/NotAuthorizedError";
 
@@ -54,7 +54,7 @@ class usersService {
 
     async getUserById(id : number)
     {
-        if(isNaN(id))
+        if(isNaN(id) || !isValidId(id))
             throw new InvalidParamError('Invalid param');
             
         const user : Users | null = await prisma.users.findFirst({
@@ -399,6 +399,9 @@ class usersService {
             }
         })
         
+        if (user == null)
+            throw new Error("Something happened");
+
         if (!user.musics)
             throw new QueryError("User haven't listened any music yet");
 
