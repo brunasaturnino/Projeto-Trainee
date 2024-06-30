@@ -250,10 +250,13 @@ class usersService {
 
     }
 
-    async haveUserListenedMusic(idUser : number, idMusic : number)
+    async haveUserListenedMusic(idUser : number, idMusic : number, currentUser : Users)
     {
-        if(isNaN(idUser) || isNaN(idMusic))
+        if(isNaN(idUser) || isNaN(idMusic) || !isValidId(idUser) || !isValidId(idMusic))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.id != idUser)
+            throw new Error('Only administrators can see users history freely')
 
         const userExist : Users | null = await prisma.users.findFirst({
             where : {
@@ -290,15 +293,16 @@ class usersService {
         })
         
         return (user != null);
-        
-        
     }
 
-    async userListenedMusic(idUser : number, idMusic : number)
+    async userListenedMusic(idUser : number, idMusic : number, currentUser : Users)
     {
 
-        if(isNaN(idUser) || isNaN(idMusic))
+        if(isNaN(idUser) || isNaN(idMusic) || !isValidId(idUser) || !isValidId(idMusic))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.id != idUser)
+            throw new Error('Only administrators can add musiscs to users history freely')
 
         const userExist : Users | null = await prisma.users.findFirst({
             where : {
@@ -339,7 +343,7 @@ class usersService {
            
     }
 
-    async removeUserListenedMusic(idUser: number, idMusic: number) {
+    async removeUserListenedMusic(idUser: number, idMusic: number, currentUser : Users) {
 
         if(isNaN(idUser) || isNaN(idMusic))
             throw new InvalidParamError('Invalid param');
@@ -362,7 +366,7 @@ class usersService {
         if (!musicExist) 
             throw new QueryError("This music doesn't exist");
 
-        if(await this.haveUserListenedMusic(idUser, idMusic) == false)
+        if(await this.haveUserListenedMusic(idUser, idMusic, currentUser) == false)
         {
             throw new QueryError("User haven't listened this music");
         }
