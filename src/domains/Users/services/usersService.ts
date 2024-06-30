@@ -376,10 +376,13 @@ class usersService {
         
     }
 
-    async getAllMusicsListenedByUser(idUser : number) {
+    async getAllMusicsListenedByUser(idUser : number, currentUser : Users) {
 
-        if(isNaN(idUser))
+        if(isNaN(idUser) || !isValidId(idUser))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.id != idUser)
+            throw new Error('Only administrators remove musics from users history freely');
 
         const userExist : Users | null = await prisma.users.findFirst({
             where : {
@@ -403,18 +406,21 @@ class usersService {
         if (user == null)
             throw new Error("Something happened");
 
-        if (!user.musics)
+        if (!user.musics || user.musics.length == 0)
             throw new QueryError("User haven't listened any music yet");
 
         return user.musics;
     }
    
 
-    async updateUserPasswordByEmail(email : string, password : string)
+    async updateUserPasswordByEmail(email : string, password : string, currentUser : Users)
     {
 
         if(!isValidEmail(email) || isEmpty(password))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.email != email)
+            throw new Error('Only administrators edit password freely');
 
         const userExist : Users | null = await prisma.users.findFirst({
             where : {

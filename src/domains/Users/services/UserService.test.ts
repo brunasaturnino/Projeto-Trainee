@@ -1309,3 +1309,146 @@ describe('removeUserListenedMusic', () => {
         
     });
 });
+
+describe('getAllMusicsListenedByUser', () => {
+
+    test("invalid param ==> throw error", async () => {
+
+        const currentUser: Partial<Users> = {
+            id: 1,
+            name: "test",
+            email: "test2@ijunior.com",
+            password: "teste123",
+            photo: "teste.jpg",
+            privileges: true
+        };
+
+        await expect(UserService.getAllMusicsListenedByUser(-1, currentUser as Users)).rejects.toThrow(
+            new InvalidParamError('Invalid param')
+        );
+
+        expect(prismaMock.users.findFirst).not.toHaveBeenCalled();
+        
+    });
+
+
+    test("trying to get users history not being adm and not being yours ==> throw error", async () => {
+
+        const currentUser: Partial<Users> = {
+            id: 2,
+            name: "test",
+            email: "test2@ijunior.com",
+            password: "teste123",
+            photo: "teste.jpg",
+            privileges: false
+        };
+
+        await expect(UserService.getAllMusicsListenedByUser(1, currentUser as Users)).rejects.toThrow(
+            new Error('Only administrators remove musics from users history freely')
+        );
+
+        expect(prismaMock.users.findFirst).not.toHaveBeenCalled();
+    });
+
+    test("user doesn't exists ==> throw error", async () => {
+
+        const currentUser: Partial<Users> = {
+            id: 1,
+            name: "test",
+            email: "test2@ijunior.com",
+            password: "teste123",
+            photo: "teste.jpg",
+            privileges: true
+        };
+
+        prismaMock.users.findFirst.mockResolvedValue(null);
+
+        await expect(UserService.getAllMusicsListenedByUser(2, currentUser as Users)).rejects.toThrow(
+            new QueryError("This user doesn't exist")
+        );
+
+        expect(prismaMock.users.findFirst).toHaveBeenCalledWith({ where : { id: 2 } }); 
+    });
+});
+
+
+describe('updateUserPasswordByEmail', () => {
+
+    test("invalid param ==> throw error", async () => {
+
+        const currentUser: Partial<Users> = {
+            name: "test",
+            email: "testa2@ijunior.com",
+            password: "teste123",
+            photo: "teste.jpg",
+            privileges: true
+        };
+
+        await expect(UserService.updateUserPasswordByEmail("invalid", "", currentUser as Users)).rejects.toThrow(
+            new InvalidParamError('Invalid param')
+        );
+
+        expect(prismaMock.users.findFirst).not.toHaveBeenCalled();
+        
+    });
+
+
+    test("trying to get change another users password not being yours ==> throw error", async () => {
+
+        const currentUser: Partial<Users> = {
+            id: 2,
+            name: "test",
+            email: "test2@ijunior.com",
+            password: "teste123",
+            photo: "teste.jpg",
+            privileges: false
+        };
+
+        await expect(UserService.updateUserPasswordByEmail("teste@ijunior.com", "senha123", currentUser as Users)).rejects.toThrow(
+            new Error('Only administrators edit password freely')
+        );
+
+        expect(prismaMock.users.findFirst).not.toHaveBeenCalled();
+    });
+
+    test("user doesn't exists ==> throw error", async () => {
+
+        const currentUser: Partial<Users> = {
+            name: "test",
+            email: "testa2@ijunior.com",
+            password: "teste123",
+            photo: "teste.jpg",
+            privileges: true
+        };
+
+        prismaMock.users.findFirst.mockResolvedValue(null);
+
+        await expect(UserService.updateUserPasswordByEmail("teste@ijunior.com", "senha123", currentUser as Users)).rejects.toThrow(
+            new QueryError("This user doesn't exist")
+        );
+
+        expect(prismaMock.users.findFirst).toHaveBeenCalledWith({ where : { email: "teste@ijunior.com" } });
+    });
+
+
+    test("changing users password ==> user", async () => {
+
+        const currentUser: Partial<Users> = {
+            id: 2,
+            name: "test",
+            email: "test2@ijunior.com",
+            password: "senha123",
+            photo: "teste.jpg",
+            privileges: false
+        };
+
+        prismaMock.users.findFirst.mockResolvedValue(currentUser as Users);
+        prismaMock.users.update.mockResolvedValue(currentUser as Users);
+
+        await expect(UserService.updateUserPasswordByEmail("test2@ijunior.com", "senha123", currentUser as Users)).resolves.toEqual(currentUser as Users);
+
+        expect(prismaMock.users.findFirst).toHaveBeenCalledWith({ where : { email: "test2@ijunior.com" } });
+    });
+
+
+});
