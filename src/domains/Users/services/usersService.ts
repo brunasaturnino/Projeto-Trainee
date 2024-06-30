@@ -116,12 +116,15 @@ class usersService {
         return users;    
     }
 
-    async updateUserById(id : number, user : Users, currentUser : Users | null)
+    async updateUserById(id : number, user : Users, currentUser : Users)
     {
         
         if (!isValidEmail(user.email) || isEmpty(user.name) ||
-        isEmpty(user.password) || isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || isNaN(id))
+        isEmpty(user.password) || !isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || isNaN(id) || !isValidId(id))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.id != id)
+            throw new Error('Only administrators can update users freely');
 
         if (user.privileges && !(currentUser?.privileges))
             throw new NotAuthorizedError('Only administrators can update privileges');
@@ -148,12 +151,15 @@ class usersService {
         return updatedUser;
     }
 
-    async updateUserByEmail(email : string, user : Users, currentUser : Users | null)
+    async updateUserByEmail(email : string, user : Users, currentUser : Users)
     {
 
         if (!isValidEmail(user.email) || isEmpty(user.name) ||
-        isEmpty(user.password) || isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || !isValidEmail(email))
+        isEmpty(user.password) || !isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || !isValidEmail(email))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.email != email)
+            throw new Error('Only administrators can update users freely');
 
         if (user.privileges && !(currentUser?.privileges))
             throw new NotAuthorizedError('Only administrators can update privileges');
@@ -182,11 +188,14 @@ class usersService {
         
     }
 
-    async removeUserById(id : number)
+    async removeUserById(id : number, currentUser : Users)
     {
         
-        if(isNaN(id))
+        if (isNaN(id) || !isValidId(id))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.id != id)
+            throw new Error('Only administrators can remove users freely');
 
         const userExist : Users | null = await prisma.users.findFirst({
             where : {
@@ -209,11 +218,14 @@ class usersService {
         return removedUser;
     }
 
-    async removeUserByEmail(email : string)
+    async removeUserByEmail(email : string, currentUser : Users)
     {
 
         if(!isValidEmail(email))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.email != email)
+            throw new Error('Only administrators can remove users freely');
 
         const userExist : Users | null = await prisma.users.findFirst({
             where : {
