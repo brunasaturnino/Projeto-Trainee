@@ -185,3 +185,50 @@ describe('getUserByEmail', () => {
 
     
 });
+
+
+describe('getAllUsers', () => {
+
+    test("database empty ==> throw error", async () => {
+
+        await expect(UserService.getAllUsers()).rejects.toThrow(
+            new QueryError("Database empty")
+        );
+
+        expect(prismaMock.users.findMany).toHaveBeenCalled();
+        
+    });
+
+    test("getting all users ==> users", async () => {
+
+        const users : Users[] = [
+
+            {
+                id: 1,
+                name: "test",
+                email: "test2@ijunior.com",
+                password: "teste123",
+                photo: "teste.jpg",
+                privileges: false
+            },
+
+            {
+                id: 2,
+                name: "adm",
+                email: "adm@ijunior.com",
+                password: "teste123",
+                photo: "teste.jpg",
+                privileges: true
+            }
+        ]
+
+        prismaMock.users.findMany.mockResolvedValue(users);
+
+        await expect(UserService.getAllUsers()).resolves.toEqual(users);
+
+        expect(prismaMock.users.findMany).toHaveBeenCalled();
+        
+    });
+
+    
+});
