@@ -92,7 +92,7 @@ class usersService {
             orderBy: { name: "asc" },
         });
 
-        if (!users)
+        if (!users || users.length == 0)
             throw new QueryError("Database empty");
 
         return users;
@@ -110,7 +110,7 @@ class usersService {
             }
         });
 
-        if (!users)
+        if (!users || users.length == 0)
             throw new QueryError("Database empty");
 
         return users;    

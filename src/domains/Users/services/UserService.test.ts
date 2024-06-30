@@ -191,6 +191,8 @@ describe('getAllUsers', () => {
 
     test("database empty ==> throw error", async () => {
 
+        prismaMock.users.findMany.mockResolvedValue([]);
+
         await expect(UserService.getAllUsers()).rejects.toThrow(
             new QueryError("Database empty")
         );
@@ -225,6 +227,55 @@ describe('getAllUsers', () => {
         prismaMock.users.findMany.mockResolvedValue(users);
 
         await expect(UserService.getAllUsers()).resolves.toEqual(users);
+
+        expect(prismaMock.users.findMany).toHaveBeenCalled();
+        
+    });
+
+    
+});
+
+
+describe('getAllUsers', () => {
+
+    test("database empty ==> throw error", async () => {
+
+        prismaMock.users.findMany.mockResolvedValue([]);
+
+        await expect(UserService.filterByPrivileges(true)).rejects.toThrow(
+            new QueryError("Database empty")
+        );
+
+        expect(prismaMock.users.findMany).toHaveBeenCalled();
+        
+    });
+
+    test("getting all users with specified privilege ==> users", async () => {
+
+        const users : Users[] = [
+
+            {
+                id: 1,
+                name: "test",
+                email: "test2@ijunior.com",
+                password: "teste123",
+                photo: "teste.jpg",
+                privileges: true
+            },
+
+            {
+                id: 2,
+                name: "adm",
+                email: "adm@ijunior.com",
+                password: "teste123",
+                photo: "teste.jpg",
+                privileges: true
+            }
+        ]
+
+        prismaMock.users.findMany.mockResolvedValue(users);
+
+        await expect(UserService.filterByPrivileges(true)).resolves.toEqual(users);
 
         expect(prismaMock.users.findMany).toHaveBeenCalled();
         
