@@ -345,26 +345,11 @@ class usersService {
 
     async removeUserListenedMusic(idUser: number, idMusic: number, currentUser : Users) {
 
-        if(isNaN(idUser) || isNaN(idMusic))
+        if(isNaN(idUser) || isNaN(idMusic) || !isValidId(idUser) || !isValidId(idMusic))
             throw new InvalidParamError('Invalid param');
 
-        const userExist : Users | null = await prisma.users.findFirst({
-            where : {
-                id: idUser
-            }
-        })
-
-        if (!userExist) 
-            throw new QueryError("This user doesn't exist");
-
-        const musicExist : Musics | null = await prisma.musics.findFirst({
-            where : {
-                id: idMusic
-            }
-        })
-
-        if (!musicExist) 
-            throw new QueryError("This music doesn't exist");
+        if (!currentUser.privileges && currentUser.id != idUser)
+            throw new Error('Only administrators remove musics from users history freely');
 
         if(await this.haveUserListenedMusic(idUser, idMusic, currentUser) == false)
         {
