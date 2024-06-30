@@ -302,7 +302,7 @@ class usersService {
             throw new InvalidParamError('Invalid param');
 
         if (!currentUser.privileges && currentUser.id != idUser)
-            throw new Error('Only administrators can add musiscs to users history freely')
+            throw new Error('Only administrators can add musics to users history freely')
 
         const userExist : Users | null = await prisma.users.findFirst({
             where : {

@@ -833,7 +833,7 @@ describe('haveUserListenedMusic', () => {
     });
 
 
-    test("remove another user not being adm or not being yours ==> throw error", async () => {
+    test("see users history not being adm and not being yours ==> throw error", async () => {
 
         const currentUser: Partial<Users> = {
             id: 2,
@@ -906,7 +906,7 @@ describe('haveUserListenedMusic', () => {
     });
 
 
-    test("see users history ==> throw error", async () => {
+    test("see users history ==> true", async () => {
 
         const user: Users = {
             id: 2,
@@ -953,6 +953,154 @@ describe('haveUserListenedMusic', () => {
                     }
 
                 }
+            }
+        })
+        
+    });
+});
+
+describe('userListenedMusic', () => {
+
+    test("invalid param ==> throw error", async () => {
+
+        const currentUser: Partial<Users> = {
+            id: 1,
+            name: "test",
+            email: "test2@ijunior.com",
+            password: "teste123",
+            photo: "teste.jpg",
+            privileges: true
+        };
+
+        await expect(UserService.userListenedMusic(-1, -1, currentUser as Users)).rejects.toThrow(
+            new InvalidParamError('Invalid param')
+        );
+
+        expect(prismaMock.users.findFirst).not.toHaveBeenCalled();
+        
+    });
+
+
+    test("adding music to users history not being adm and not being yours ==> throw error", async () => {
+
+        const currentUser: Partial<Users> = {
+            id: 2,
+            name: "test",
+            email: "test2@ijunior.com",
+            password: "teste123",
+            photo: "teste.jpg",
+            privileges: false
+        };
+
+        await expect(UserService.userListenedMusic(1, 1, currentUser as Users)).rejects.toThrow(
+            new Error('Only administrators can add musics to users history freely')
+        );
+
+        expect(prismaMock.users.findFirst).not.toHaveBeenCalled();
+    });
+
+    test("user doesn't exists ==> throw error", async () => {
+
+        const currentUser: Partial<Users> = {
+            id: 1,
+            name: "test",
+            email: "test2@ijunior.com",
+            password: "teste123",
+            photo: "teste.jpg",
+            privileges: true
+        };
+
+        prismaMock.users.findFirst.mockResolvedValue(null);
+
+        await expect(UserService.userListenedMusic(2, 1, currentUser as Users)).rejects.toThrow(
+            new QueryError("This user doesn't exist")
+        );
+
+        expect(prismaMock.users.findFirst).toHaveBeenCalledWith({ where : { id: 2 } });
+        
+    });
+
+
+    test("music doesn't exists ==> throw error", async () => {
+
+        const user: Users = {
+            id: 2,
+            name: "test",
+            email: "test@ijunior.com",
+            password: "teste123",
+            photo: "teste.jpg",
+            privileges: false
+        };
+        
+        const currentUser: Partial<Users> = {
+            id: 1,
+            name: "test",
+            email: "test2@ijunior.com",
+            password: "teste123",
+            photo: "teste.jpg",
+            privileges: true
+        };
+
+        prismaMock.users.findFirst.mockResolvedValue(user);
+        prismaMock.musics.findFirst.mockResolvedValue(null);
+
+        await expect(UserService.userListenedMusic(2, 1, currentUser as Users)).rejects.toThrow(
+            new QueryError("This music doesn't exist")
+        );
+
+        expect(prismaMock.users.findFirst).toHaveBeenCalledWith({ where : { id: 2 } });
+        expect(prismaMock.musics.findFirst).toHaveBeenCalledWith({ where : { id: 1 } });
+        
+    });
+
+
+    test("update users history ==> true", async () => {
+
+        const user: Users = {
+            id: 2,
+            name: "test",
+            email: "test@ijunior.com",
+            password: "teste123",
+            photo: "teste.jpg",
+            privileges: false
+        };
+
+        const music : Musics = {
+            id: 1,
+            artistId: 10,
+            album: "test album",
+            genre: "test genre",
+            name: "test name"
+        }
+        
+        const currentUser: Partial<Users> = {
+            id: 1,
+            name: "test",
+            email: "test2@ijunior.com",
+            password: "teste123",
+            photo: "teste.jpg",
+            privileges: true
+        };
+
+        prismaMock.users.findFirst.mockResolvedValue(user);
+        prismaMock.musics.findFirst.mockResolvedValue(music);
+        prismaMock.users.update.mockResolvedValue(user);
+
+        await expect(UserService.userListenedMusic(2, 1, currentUser as Users)).resolves.toEqual(user);
+
+        expect(prismaMock.users.findFirst).toHaveBeenCalledWith({ where : { id: 2 } });
+        expect(prismaMock.musics.findFirst).toHaveBeenCalledWith({ where : { id: 1 } });
+        expect(prismaMock.users.update).toHaveBeenCalledWith({
+            where: {
+                id: 2
+            },
+
+            data: {
+                musics: {
+                    connect: {
+                        id: 1,
+                    },
+                },
             }
         })
         
