@@ -2,7 +2,7 @@ import { Users, Musics } from "@prisma/client";
 import prisma from "../../../../config/prismaClient";
 import bcrypt from "bcrypt";
 import { QueryError } from "../../../../errors/errors/QueryError";
-import { isValidEmail, isValidPhoto, isValidPrivileges,isEmpty } from "../../../../utils/auxiliary/auxiliaryFunctions"
+import { isValidEmail, isValidPhoto, isValidPrivileges, isEmpty, isValidId } from "../../../../utils/auxiliary/auxiliaryFunctions"
 import { InvalidParamError } from "../../../../errors/errors/InvalidParamError";
 import { NotAuthorizedError } from "../../../../errors/errors/NotAuthorizedError";
 
@@ -54,7 +54,7 @@ class usersService {
 
     async getUserById(id : number)
     {
-        if(isNaN(id))
+        if(isNaN(id) || !isValidId(id))
             throw new InvalidParamError('Invalid param');
             
         const user : Users | null = await prisma.users.findFirst({
@@ -92,7 +92,7 @@ class usersService {
             orderBy: { name: "asc" },
         });
 
-        if (!users)
+        if (!users || users.length == 0)
             throw new QueryError("Database empty");
 
         return users;
@@ -110,18 +110,21 @@ class usersService {
             }
         });
 
-        if (!users)
+        if (!users || users.length == 0)
             throw new QueryError("Database empty");
 
         return users;    
     }
 
-    async updateUserById(id : number, user : Users, currentUser : Users | null)
+    async updateUserById(id : number, user : Users, currentUser : Users)
     {
         
         if (!isValidEmail(user.email) || isEmpty(user.name) ||
-        isEmpty(user.password) || isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || isNaN(id))
+        isEmpty(user.password) || !isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || isNaN(id) || !isValidId(id))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.id != id)
+            throw new Error('Only administrators can update users freely');
 
         if (user.privileges && !(currentUser?.privileges))
             throw new NotAuthorizedError('Only administrators can update privileges');
@@ -148,12 +151,15 @@ class usersService {
         return updatedUser;
     }
 
-    async updateUserByEmail(email : string, user : Users, currentUser : Users | null)
+    async updateUserByEmail(email : string, user : Users, currentUser : Users)
     {
 
         if (!isValidEmail(user.email) || isEmpty(user.name) ||
-        isEmpty(user.password) || isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || !isValidEmail(email))
+        isEmpty(user.password) || !isValidPhoto(user.photo) || !isValidPrivileges(user.privileges) || !isValidEmail(email))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.email != email)
+            throw new Error('Only administrators can update users freely');
 
         if (user.privileges && !(currentUser?.privileges))
             throw new NotAuthorizedError('Only administrators can update privileges');
@@ -182,11 +188,14 @@ class usersService {
         
     }
 
-    async removeUserById(id : number)
+    async removeUserById(id : number, currentUser : Users)
     {
         
-        if(isNaN(id))
+        if (isNaN(id) || !isValidId(id))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.id != id)
+            throw new Error('Only administrators can remove users freely');
 
         const userExist : Users | null = await prisma.users.findFirst({
             where : {
@@ -209,11 +218,14 @@ class usersService {
         return removedUser;
     }
 
-    async removeUserByEmail(email : string)
+    async removeUserByEmail(email : string, currentUser : Users)
     {
 
         if(!isValidEmail(email))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.email != email)
+            throw new Error('Only administrators can remove users freely');
 
         const userExist : Users | null = await prisma.users.findFirst({
             where : {
@@ -238,10 +250,13 @@ class usersService {
 
     }
 
-    async haveUserListenedMusic(idUser : number, idMusic : number)
+    async haveUserListenedMusic(idUser : number, idMusic : number, currentUser : Users)
     {
-        if(isNaN(idUser) || isNaN(idMusic))
+        if(isNaN(idUser) || isNaN(idMusic) || !isValidId(idUser) || !isValidId(idMusic))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.id != idUser)
+            throw new Error('Only administrators can see users history freely')
 
         const userExist : Users | null = await prisma.users.findFirst({
             where : {
@@ -278,15 +293,16 @@ class usersService {
         })
         
         return (user != null);
-        
-        
     }
 
-    async userListenedMusic(idUser : number, idMusic : number)
+    async userListenedMusic(idUser : number, idMusic : number, currentUser : Users)
     {
 
-        if(isNaN(idUser) || isNaN(idMusic))
+        if(isNaN(idUser) || isNaN(idMusic) || !isValidId(idUser) || !isValidId(idMusic))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.id != idUser)
+            throw new Error('Only administrators can add musics to users history freely')
 
         const userExist : Users | null = await prisma.users.findFirst({
             where : {
@@ -327,30 +343,15 @@ class usersService {
            
     }
 
-    async removeUserListenedMusic(idUser: number, idMusic: number) {
+    async removeUserListenedMusic(idUser: number, idMusic: number, currentUser : Users) {
 
-        if(isNaN(idUser) || isNaN(idMusic))
+        if(isNaN(idUser) || isNaN(idMusic) || !isValidId(idUser) || !isValidId(idMusic))
             throw new InvalidParamError('Invalid param');
 
-        const userExist : Users | null = await prisma.users.findFirst({
-            where : {
-                id: idUser
-            }
-        })
+        if (!currentUser.privileges && currentUser.id != idUser)
+            throw new Error('Only administrators remove musics from users history freely');
 
-        if (!userExist) 
-            throw new QueryError("This user doesn't exist");
-
-        const musicExist : Musics | null = await prisma.musics.findFirst({
-            where : {
-                id: idMusic
-            }
-        })
-
-        if (!musicExist) 
-            throw new QueryError("This music doesn't exist");
-
-        if(await this.haveUserListenedMusic(idUser, idMusic) == false)
+        if(await this.haveUserListenedMusic(idUser, idMusic, currentUser) == false)
         {
             throw new QueryError("User haven't listened this music");
         }
@@ -375,10 +376,13 @@ class usersService {
         
     }
 
-    async getAllMusicsListenedByUser(idUser : number) {
+    async getAllMusicsListenedByUser(idUser : number, currentUser : Users) {
 
-        if(isNaN(idUser))
+        if(isNaN(idUser) || !isValidId(idUser))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.id != idUser)
+            throw new Error('Only administrators remove musics from users history freely');
 
         const userExist : Users | null = await prisma.users.findFirst({
             where : {
@@ -399,18 +403,24 @@ class usersService {
             }
         })
         
-        if (!user.musics)
+        if (user == null)
+            throw new Error("Something happened");
+
+        if (!user.musics || user.musics.length == 0)
             throw new QueryError("User haven't listened any music yet");
 
         return user.musics;
     }
    
 
-    async updateUserPasswordByEmail(email : string, password : string)
+    async updateUserPasswordByEmail(email : string, password : string, currentUser : Users)
     {
 
         if(!isValidEmail(email) || isEmpty(password))
             throw new InvalidParamError('Invalid param');
+
+        if (!currentUser.privileges && currentUser.email != email)
+            throw new Error('Only administrators edit password freely');
 
         const userExist : Users | null = await prisma.users.findFirst({
             where : {

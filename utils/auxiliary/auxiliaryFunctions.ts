@@ -9,7 +9,10 @@ export function isValidEmail(email : string) {
 }
 
 
-export function isValidPhoto(photo : string) {
+export function isValidPhoto(photo : string | null) {
+
+    if (photo == null)
+        return false;
 
     const photoFormat = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i;
 
@@ -35,6 +38,10 @@ export  function isEmpty(name : string) {
 export  function stringtoBoolean(value : string) {
 
     return value == "true";
+}
+
+export function isValidId(id : number) {
+    return (id > 0);
 }
 
 
